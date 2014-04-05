@@ -167,7 +167,7 @@
 					}
 				};
 				if (data !== undefined) {
-					request[contentType] = "application/json";
+					request["contentType"] = "application/json";
 				}
 				return $.ajax(request);
 			}
@@ -244,9 +244,8 @@
 						});
 					}
 				}).fail(function(jqXHR) {
-					alert("get failed");
 					if(jqXHR.status = 403) {
-						//setTimeout(self.beginLogin, 500);
+						setTimeout(self.beginLogin, 500);
 					}
 				});
 			}
