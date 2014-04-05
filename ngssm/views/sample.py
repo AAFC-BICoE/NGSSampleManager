@@ -57,6 +57,8 @@ class SampleAPI(Resource):
 		print "Received delete request for: ", id
 		session = app.session_maker()
 		sample  = session.query(Sample).filter_by(id=id).first()
+		if sample == None:
+			abort(404)
 		session.delete(sample)
 		session.commit()
 		return { 'result': True }
