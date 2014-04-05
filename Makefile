@@ -1,13 +1,17 @@
 .PHONY: setup
-setup:
-	virtualenv ngssmenv
-	ngssmenv/bin/pip install flask
-	ngssmenv/bin/pip install flask-restful
-	ngssmenv/bin/pip install flask-httpauth
-	ngssmenv/bin/pip install sqlalchemy
-	ngssmenv/bin/pip install xlrd
-	ngssmenv/bin/pip install selenium
-	ngssmenv/bin/pip install nose
+setup: ngssmenv
+
+.PHONY: test
+test: setup
+	./ngssmenv/bin/nosetests
+
+.PHONY: load
+load: setup
+	./ngssm/loader.py
+
+.PHONY: run
+run: setup
+	./runserver.py
 
 .PHONY: db_clean
 db_clean:
@@ -18,14 +22,14 @@ clean: db_clean
 	rm -rf ngssmenv
 	find . -name "*.pyc" -delete
 
-.PHONY: load
-load:
-	./ngssm/loader.py
+ngssmenv:
+	virtualenv ngssmenv
+	ngssmenv/bin/pip install flask
+	ngssmenv/bin/pip install flask-restful
+	ngssmenv/bin/pip install flask-httpauth
+	ngssmenv/bin/pip install sqlalchemy
+	ngssmenv/bin/pip install xlrd
+	ngssmenv/bin/pip install selenium
+	ngssmenv/bin/pip install nose
 
-.PHONY: run
-run: setup
-	./runserver.py
 
-.PHONY: test
-test:
-	./ngssmenv/bin/nosetests
