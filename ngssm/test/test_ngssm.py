@@ -142,6 +142,25 @@ class ApplicationContextTests(unittest.TestCase):
 		print rv.data
 		assert '"status": 404' in rv.data
 
+	def test_filter_sample_list(self):
+		"""Test filtering a sample list"""
+		h = self.get_headers(False)
+		hc = self.get_headers(True)
+		rv = self.app.get('/ngssm/api/v1.0/samples', headers=h)
+		print rv.data
+		assert '"samples_count": 0' in rv.data
+		rv = self.app.post('/ngssm/api/v1.0/samples', data='{"plate":"5.1"}', headers=hc)
+		assert 'samples/1' in rv.data
+		rv = self.app.post('/ngssm/api/v1.0/samples', data='{"plate":"5.2"}', headers=hc)
+		assert 'samples/2' in rv.data
+		rv = self.app.get('/ngssm/api/v1.0/samples', headers=h)
+		assert '"samples_count": 2' in rv.data
+		print "Get: /ngssm/api/v1.0/samples?plate=5.1"
+		rv = self.app.get('/ngssm/api/v1.0/samples?plate=5.1', headers=h)
+		assert '"samples_count": 1' in rv.data
+
+
+
 #	def test_make_public_sample(self):
 #		"""Test ensures conversion of id to URI and removal of id"""
 #		sample = Sample(id=1, plate="45.2")

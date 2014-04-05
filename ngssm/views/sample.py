@@ -63,21 +63,31 @@ class SampleAPI(Resource):
 	
 class SampleListAPI(Resource):
 	def __init__(self):
+		self.postreqparse = reqparse.RequestParser()
+		self.postreqparse.add_argument('plate', type = str, required = True, help="No plate provided", location = 'json')
+		self.postreqparse.add_argument('mid', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('mid_set', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('target', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('sff', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('location', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('primer_forward', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('primer_reverse', type = str, default = "", location = 'json')
+
 		self.reqparse = reqparse.RequestParser()
-		self.reqparse.add_argument('plate', type = str, default = "", location = 'json')
-		self.reqparse.add_argument('mid', type = str, default = "", location = 'json')
-		self.reqparse.add_argument('mid_set', type = str, default = "", location = 'json')
-		self.reqparse.add_argument('target', type = str, default = "", location = 'json')
-		self.reqparse.add_argument('sff', type = str, default = "", location = 'json')
-		self.reqparse.add_argument('location', type = str, default = "", location = 'json')
-		self.reqparse.add_argument('primer_forward', type = str, default = "", location = 'json')
-		self.reqparse.add_argument('primer_reverse', type = str, default = "", location = 'json')
+		self.reqparse.add_argument('plate', type = str, default = "")
+		self.reqparse.add_argument('mid', type = str, default = "")
+		self.reqparse.add_argument('mid_set', type = str, default = "")
+		self.reqparse.add_argument('target', type = str, default = "")
+		self.reqparse.add_argument('sff', type = str, default = "")
+		self.reqparse.add_argument('location', type = str, default = "")
+		self.reqparse.add_argument('primer_forward', type = str, default = "")
+		self.reqparse.add_argument('primer_reverse', type = str, default = "")
 		super(SampleListAPI, self).__init__();
 
 	@auth.login_required
 	def post(self):
 
-		args = self.reqparse.parse_args();
+		args = self.postreqparse.parse_args();
 
 		if not 'plate' in args:
 			abort(400)
@@ -115,7 +125,3 @@ class SampleListAPI(Resource):
 
 api.add_resource(SampleListAPI, '/ngssm/api/v1.0/samples', endpoint = 'samples')
 api.add_resource(SampleAPI, '/ngssm/api/v1.0/samples/<int:id>', endpoint = 'sample')
-
- 
-
-
