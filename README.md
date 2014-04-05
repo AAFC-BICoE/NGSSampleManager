@@ -13,7 +13,7 @@ make setup  # creates phython virtual env
 
 make test   # runs tests
 
-make run    # start internal python server
+make run    # start internal python server; http://localhost:5000
 
 ## API Reference
 
