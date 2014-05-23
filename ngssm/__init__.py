@@ -1,6 +1,8 @@
 #!ngssmenv/bin/python
 
 from entities.base import Base
+from entities.sample import Sample
+from entities.run import Run
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
