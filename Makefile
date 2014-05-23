@@ -15,7 +15,7 @@ run: setup
 
 .PHONY: db_clean
 db_clean:
-	rm -f ngssm.db
+	rm -f ngssm.db test.db
 
 .PHONY: clean
 clean: db_clean
