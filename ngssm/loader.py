@@ -2,7 +2,9 @@
 
 from entities.base import Base
 from entities.sample import Sample
+from entities.run import Run
 from helpers.xlssample import summary_to_entity, entity_to_index
+from helpers.orm import get_or_create
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -35,13 +37,20 @@ print ("Rows: {} ").format(num_rows)
 curr_row = 0 # skip the header row
 while curr_row < num_rows:
 	curr_row += 1
+
+	run = get_or_create(session, Run, 
+		type="454",
+		mid_set=worksheet.cell_value(curr_row, entity_to_index['mid_set']),
+		plate=worksheet.cell_value(curr_row, entity_to_index['plate']),
+		sequencing_notes=worksheet.cell_value(curr_row, entity_to_index['sequencing_notes'])
+	)
+
 	sample = Sample(
+		run=run,
 		shipped=worksheet.cell_value(curr_row, entity_to_index['shipped']),
 		received=worksheet.cell_value(curr_row, entity_to_index['received']),
 		project=worksheet.cell_value(curr_row, entity_to_index['project']),
 		sff=worksheet.cell_value(curr_row, entity_to_index['sff']),
-		mid_set=worksheet.cell_value(curr_row, entity_to_index['mid_set']),
-		plate=worksheet.cell_value(curr_row, entity_to_index['plate']),
 		mid=worksheet.cell_value(curr_row, entity_to_index['mid']),
 		sample=worksheet.cell_value(curr_row, entity_to_index['sample']),
 		collector=worksheet.cell_value(curr_row, entity_to_index['collector']),
@@ -69,7 +78,6 @@ while curr_row < num_rows:
 		annealing=worksheet.cell_value(curr_row, entity_to_index['annealing']),
 		dna_ug=worksheet.cell_value(curr_row, entity_to_index['dna_ug']),
 		notes=worksheet.cell_value(curr_row, entity_to_index['notes']),
-		sequencing_notes=worksheet.cell_value(curr_row, entity_to_index['sequencing_notes']),
 		tm_c_max=worksheet.cell_value(curr_row, entity_to_index['tm_c_max']),
 		tm_c_min=worksheet.cell_value(curr_row, entity_to_index['tm_c_min']),
 		tm_c_avg=worksheet.cell_value(curr_row, entity_to_index['tm_c_avg']),
