@@ -5,12 +5,12 @@ from flask.ext.restful import Resource, reqparse, fields, marshal
 from ngssm.entities.sample import Sample
 
 sample_fields = {
-		'plate': fields.String,
+		'run_id': fields.Integer,
 		'mid': fields.String,
-		'mid_set': fields.String,
 		'target': fields.String,
 		'sff': fields.String,
 		'location': fields.String,
+		'sample': fields.String,
 		'primer_forward': fields.String,
 		'primer_reverse': fields.String,
 		'uri': fields.Url('sample')
@@ -19,11 +19,14 @@ sample_fields = {
 class SampleAPI(Resource):
 	def __init__(self):
 		self.reqparse = reqparse.RequestParser()
-		self.reqparse.add_argument('plate', type = str, location = 'json')
+		self.reqparse.add_argument('run_id', type = int, location = 'json')
 		self.reqparse.add_argument('mid', type = str, location = 'json')
-		self.reqparse.add_argument('mid_set', type = str, location = 'json')
 		self.reqparse.add_argument('target', type = str, location = 'json')
 		self.reqparse.add_argument('sff', type = str, location = 'json')
+		self.reqparse.add_argument('location', type = str, location = 'json')
+		self.reqparse.add_argument('sample', type = str, location = 'json')
+		self.reqparse.add_argument('primer_forward', type = str, location = 'json')
+		self.reqparse.add_argument('primer_reverse', type = str, location = 'json')
 		super(SampleAPI, self).__init__();
 
 	@auth.login_required
@@ -66,22 +69,22 @@ class SampleAPI(Resource):
 class SampleListAPI(Resource):
 	def __init__(self):
 		self.postreqparse = reqparse.RequestParser()
-		self.postreqparse.add_argument('plate', type = str, required = True, help="No plate provided", location = 'json')
+		self.postreqparse.add_argument('run_id', type = int, required = True, help="No run selected", location = 'json')
 		self.postreqparse.add_argument('mid', type = str, default = "", location = 'json')
-		self.postreqparse.add_argument('mid_set', type = str, default = "", location = 'json')
 		self.postreqparse.add_argument('target', type = str, default = "", location = 'json')
 		self.postreqparse.add_argument('sff', type = str, default = "", location = 'json')
 		self.postreqparse.add_argument('location', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('sample', type = str, default = "", location = 'json')
 		self.postreqparse.add_argument('primer_forward', type = str, default = "", location = 'json')
 		self.postreqparse.add_argument('primer_reverse', type = str, default = "", location = 'json')
 
 		self.reqparse = reqparse.RequestParser()
-		self.reqparse.add_argument('plate', type = str, default = "")
+		self.reqparse.add_argument('run_id', type = int, default = "")
 		self.reqparse.add_argument('mid', type = str, default = "")
-		self.reqparse.add_argument('mid_set', type = str, default = "")
 		self.reqparse.add_argument('target', type = str, default = "")
 		self.reqparse.add_argument('sff', type = str, default = "")
 		self.reqparse.add_argument('location', type = str, default = "")
+		self.reqparse.add_argument('sample', type = str, default = "")
 		self.reqparse.add_argument('primer_forward', type = str, default = "")
 		self.reqparse.add_argument('primer_reverse', type = str, default = "")
 		super(SampleListAPI, self).__init__();
@@ -91,7 +94,7 @@ class SampleListAPI(Resource):
 
 		args = self.postreqparse.parse_args();
 
-		if not 'plate' in args:
+		if not 'run_id' in args:
 			abort(400)
 		
 		sample = Sample()
@@ -123,7 +126,7 @@ class SampleListAPI(Resource):
 			print "Applying ", len(kwargs), " filters"
 			query = query.filter_by(**kwargs)
 
-		return { 'samples': marshal(query.all(), sample_fields), 'samples_count': query.count() }
+		return { 'samples': marshal(query.all(), sample_fields), 'sample_count': query.count() }
 
 api.add_resource(SampleListAPI, '/ngssm/api/v1.0/samples', endpoint = 'samples')
 api.add_resource(SampleAPI, '/ngssm/api/v1.0/samples/<int:id>', endpoint = 'sample')
