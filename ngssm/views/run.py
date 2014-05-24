@@ -31,7 +31,7 @@ class RunAPI(Resource):
 	@auth.login_required
 	def put(self, id):
 		session = app.session_maker()
-		run = session.query(RUn).filter_by(id=id).first()
+		run = session.query(Run).filter_by(id=id).first()
 	
 		args = self.reqparse.parse_args();
 
@@ -60,24 +60,16 @@ class RunAPI(Resource):
 class RunListAPI(Resource):
 	def __init__(self):
 		self.postreqparse = reqparse.RequestParser()
-		self.postreqparse.add_argument('run_uri', type = str, required = True, help="No run selected", location = 'json')
-		self.postreqparse.add_argument('mid', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('type', type = str, default = "", location = 'json')
 		self.postreqparse.add_argument('mid_set', type = str, default = "", location = 'json')
-		self.postreqparse.add_argument('target', type = str, default = "", location = 'json')
-		self.postreqparse.add_argument('sff', type = str, default = "", location = 'json')
-		self.postreqparse.add_argument('location', type = str, default = "", location = 'json')
-		self.postreqparse.add_argument('primer_forward', type = str, default = "", location = 'json')
-		self.postreqparse.add_argument('primer_reverse', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('plate', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('sequencing_notes', type = str, default = "", location = 'json')
 
 		self.reqparse = reqparse.RequestParser()
-		self.reqparse.add_argument('run_uri', type = str, default = "")
-		self.reqparse.add_argument('mid', type = str, default = "")
+		self.reqparse.add_argument('type', type = str, default = "")
 		self.reqparse.add_argument('mid_set', type = str, default = "")
-		self.reqparse.add_argument('target', type = str, default = "")
-		self.reqparse.add_argument('sff', type = str, default = "")
-		self.reqparse.add_argument('location', type = str, default = "")
-		self.reqparse.add_argument('primer_forward', type = str, default = "")
-		self.reqparse.add_argument('primer_reverse', type = str, default = "")
+		self.reqparse.add_argument('plate', type = str, default = "")
+		self.reqparse.add_argument('sequencing_notes', type = str, default = "")
 		super(RunListAPI, self).__init__();
 
 	@auth.login_required
@@ -85,9 +77,6 @@ class RunListAPI(Resource):
 
 		args = self.postreqparse.parse_args();
 
-		if not 'run_uri' in args:
-			abort(400)
-		
 		run = Run()
 		for k, v in args.iteritems():
 			if v != None:
