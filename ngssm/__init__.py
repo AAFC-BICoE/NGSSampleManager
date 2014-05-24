@@ -16,6 +16,7 @@ app = Flask(__name__, static_url_path = "")
 api = Api(app)
 
 import views.sample
+import views.run
 
 app.config.update(dict(
 	DATABASE_URI="sqlite:///ngssm.db",
