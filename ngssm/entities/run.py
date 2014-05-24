@@ -19,3 +19,6 @@ class Run(Base):
 	plate = Column(String)
 
 	sequencing_notes = Column(String)
+
+        def __repr__(self):
+                return '<Run: %r>' % (self.plate)

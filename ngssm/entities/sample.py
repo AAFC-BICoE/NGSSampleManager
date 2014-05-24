@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 class Sample(Base):
 	__tablename__ = 'sample'
 	id = Column(Integer, primary_key=True)
-	run_id = Column(Integer, ForeignKey('run.id'))
+	run_id = Column(Integer, ForeignKey('run.id'), nullable=False)
 	run = relationship(Run)
 	shipped = Column(String)
 	received = Column(String)
@@ -42,4 +42,7 @@ class Sample(Base):
 	tm_c_max = Column(String)
 	tm_c_min = Column(String)
 	tm_c_avg = Column(String)
+
+	def __repr__(self):
+		return '<Sample: %r>' % (self.sample)
 
