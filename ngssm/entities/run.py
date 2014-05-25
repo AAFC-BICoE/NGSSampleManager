@@ -1,9 +1,13 @@
 from base import Base
 from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.orm import relationship
 
 class Run(Base):
 	__tablename__ = 'run'
 	id = Column(Integer, primary_key=True)
+
+	# One-to-Many relationship to Samples contained in Run
+	samples = relationship("Sample", cascade="delete")
 
 	# sequencer type: e.g. 454, MiSeq, HiSeq
 	type = Column(String)

@@ -293,10 +293,40 @@ class ApplicationContextTests(unittest.TestCase):
 		print rv.data
 		assert '"result": true' in rv.data
 
-	def test_run_delete_with_samples(self):
+	def test_run_delete_cascade(self):
 		"""Test deleting a run with associated samples"""
-		# TODO Needs implementation
-		assert True
+		h = self.get_headers(False)
+		hc = self.get_headers(True)
+
+		rv = self.app.get('/ngssm/api/v1.0/runs', headers=h)
+		print rv.data
+		assert '"run_count": 0' in rv.data
+
+		rv = self.app.post('/ngssm/api/v1.0/runs', data='{"plate":"5.1"}', headers=hc)
+		print rv.data
+		assert 'runs/1' in rv.data
+
+		# add sample
+		rv = self.app.get('/ngssm/api/v1.0/samples', headers=h)
+		print rv.data
+		assert '"sample_count": 0' in rv.data
+
+		rv = self.app.post('/ngssm/api/v1.0/samples', data='{"run_id":"1"}', headers=hc)
+		print rv.data
+		assert 'samples/1' in rv.data
+
+		rv = self.app.delete('/ngssm/api/v1.0/runs/1', headers=h)
+		print rv.data
+		assert '"result": true' in rv.data
+
+		rv = self.app.get('/ngssm/api/v1.0/runs', headers=h)
+		print rv.data
+		assert '"run_count": 0' in rv.data
+
+		rv = self.app.get('/ngssm/api/v1.0/samples', headers=h)
+		print rv.data
+		assert '"sample_count": 0' in rv.data
+
 
 	def test_run_list_retrieve_empty(self):
 		"""Test retrieving a run from an empty list"""
