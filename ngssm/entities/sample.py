@@ -7,7 +7,6 @@ class Sample(Base):
 	__tablename__ = 'sample'
 	id = Column(Integer, primary_key=True)
 	run_id = Column(Integer, ForeignKey('run.id'), nullable=False)
-	run = relationship(Run)
 	shipped = Column(String)
 	received = Column(String)
 	project = Column(String)
