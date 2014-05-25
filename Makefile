@@ -24,12 +24,20 @@ clean: db_clean
 
 ngssmenv:
 	virtualenv ngssmenv
-	ngssmenv/bin/pip install flask
+	ngssmenv/bin/pip install flask==0.9
 	ngssmenv/bin/pip install flask-restful
+	ngssmenv/bin/pip install flask-login
+	ngssmenv/bin/pip install flask-openid
 	ngssmenv/bin/pip install flask-httpauth
-	ngssmenv/bin/pip install sqlalchemy
+	ngssmenv/bin/pip install flask-mail==0.7.6
+	ngssmenv/bin/pip install sqlalchemy==0.7.9
+	ngssmenv/bin/pip install flask-sqlalchemy==0.16
+	ngssmenv/bin/pip install sqlalchemy-migrate==0.7.2
+	ngssmenv/bin/pip install flask-whooshalchemy==0.55a
+	ngssmenv/bin/pip install flask-wtf==0.8.4
+	ngssmenv/bin/pip install pytz==2013b
+	ngssmenv/bin/pip install flask-babel==0.8
+	ngssmenv/bin/pip install flup
 	ngssmenv/bin/pip install xlrd
 	ngssmenv/bin/pip install selenium
 	ngssmenv/bin/pip install nose
-
-

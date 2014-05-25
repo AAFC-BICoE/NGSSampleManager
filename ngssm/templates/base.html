@@ -1,0 +1,32 @@
+<html>
+	<head>
+		{% if title %}
+		<title>{{title}} - NGS Sample Manager</title>
+		{% else %}
+		<title>NGS Sample Manager</title>
+		{% endif %}
+		<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+		<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+		<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<div class="navbar">
+				<div class="navbar-inner">
+					<a class="brand" href="/index">NGS Sample Manager</a>&nbsp;
+					<a class="brand" href="/runs">Runs</a>&nbsp;
+					<a class="brand" href="/samples">Samples</a>
+				</div>
+		</div>
+		<hr>
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+		<ul>
+		{% for message in messages %}
+				<li>{{ message }} </li>
+		{% endfor %}
+		</ul>
+		{% endif %}
+		{% endwith %}
+		{% block content %}{% endblock %}
+	</body>
+</html>

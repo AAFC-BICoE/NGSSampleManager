@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+        <div id="main" class="container">
+                <table id="sampleTable" class="table table-striped">
+                        <tr>
+                                <td><b>Run</b></td>
+                                <td><b>SFF</b></td>
+                                <td><b>MID</b></td>
+                                <td><b>Target</b></td>
+                                <td><b>Details</b></td>
+                                <td><b>Options</b></td>
+                        </tr>
+                        <!-- ko foreach: samples -->
+                        <tr>
+                                <td>
+                                                <p><b data-bind="text: run"></b></p>
+                                </td>
+                                <td>
+                                                <p><b data-bind="text: sff"></b></p>
+                                </td>
+                                <td>
+                                                <p><b data-bind="text: mid"></b></p>
+                                </td>
+                                <td>
+                                                <p><b data-bind="text: target"></b></p>
+                                </td>
+                                <td>
+                                                <p><b data-bind="text: mid_set"></b></p>
+                                                <p><b data-bind="text: uri"></b></p>
+                                </td>
+                                <td>
+                                        <button data-bind="click: $parent.beginEdit" class="btn">Edit</button>
+                                        <button data-bind="click: $parent.remove" class="btn">Delete</button>
+                                </td>
+                        </tr>
+                        <!-- /ko -->
+                </table>
+                <button data-bind="click: beginAdd" class="btn">Add Sample</button>
+        </div>
+{% endblock %}
