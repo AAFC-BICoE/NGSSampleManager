@@ -15,15 +15,11 @@ auth = HTTPBasicAuth()
 app = Flask(__name__, static_url_path = "")
 api = Api(app)
 
+import views.index
 import views.sample
 import views.run
 
-app.config.update(dict(
-	DATABASE_URI="sqlite:///ngssm.db",
-	DEBUG=True,
-	USERNAME='miguel',
-	PASSWORD='python',
-))
+app.config.from_object('ngssm.config');
 app.config.from_envvar('APP_SETTINGS', silent=True)
 
 
