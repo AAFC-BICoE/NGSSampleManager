@@ -13,6 +13,11 @@
 	<div class="navbar">
 		<div class="navbar-inner">
 			<a class="brand" href="#">Metagenomics Sample Client Demo</a>
+			<ul class="nav">
+				<li class="active"><a href="#">Home</a></li>
+				<li><a href="#">Runs</a></li>
+				<li><a href="#">Link</a></li>
+			</ul>
 		</div>
 	</div>
 	<div id="main" class="container">
@@ -131,207 +136,41 @@
 	</div>
 
 
-	<script type="text/javascript">
-		function getCookie(cname)
-		{
-			var name = cname + "=";
-			var ca = document.cookie.split(';');
-			for(var i=0; i<ca.length; i++) 
-			{
-				var c = ca[i].trim();
-				if (c.indexOf(name)==0) return c.substring(name.length,c.length);
-			}
-			return "";
-		}
-		function SamplesViewModel() {
-			var self = this;
-			self.samplesURI = 'http://localhost:5000/ngssm/api/v1.0/samples';
-			self.username = "";
-			self.password = "";
-			self.samples = ko.observableArray();
+	<script type="text/javascript" src="scripts/login.js"></script>
+	<script type="text/javascript" src="scripts/samples.js"></script>
 
-			self.ajax = function(uri, method, data) {
-				var request = {
-					url: uri,
-					type: method,
-					accepts: "application/json",
-					cache: false,
-					dataType: 'json',
-					data: JSON.stringify(data),
-					beforeSend: function (xhr) {
-						xhr.setRequestHeader("Authorization", 
-							"Basic " + btoa(self.username + ":" + self.password));
-					},
-					error: function(jqXHR) {
-						console.log("ajax error " + jqXHR.status);
-					}
-				};
-				if (data !== undefined) {
-					request["contentType"] = "application/json";
-				}
-				return $.ajax(request);
-			}
-
-			self.beginAdd = function() {
-				$('#add').modal('show');
-			}
-			self.add = function(sample) {
-				self.ajax(self.samplesURI, 'POST', sample).done(function(data) {
-					self.samples.push({
-						sff: ko.observable(data.sample.sff),
-						target: ko.observable(data.sample.target),
-						mid: ko.observable(data.sample.mid),
-						mid_set: ko.observable(data.sample.mid_set),
-						plate: ko.observable(data.sample.plate),
-						uri: ko.observable(data.sample.uri),
-					});
-				});
-			}
-			
-			self.beginEdit = function(sample) {
-				editSamplesViewModel.setSample(sample);
-				$('#edit').modal('show');
-			}
-			self.edit = function(sample, data) {
-				self.ajax(sample.uri(), 'PUT', data).done(function(res) {
-					self.updateSample(sample, res.sample);
-				});
-			}
-			self.updateSample = function(sample, newSample) {
-				var i = self.samples.indexOf(sample);
-				self.samples()[i].sff(newSample.sff);
-				self.samples()[i].target(newSample.target);
-				self.samples()[i].mid(newSample.mid);
-				self.samples()[i].mid_set(newSample.mid_set);
-				self.samples()[i].plate(newSample.plate);
-			}
-
-			self.remove = function(sample) {
-				self.ajax(sample.uri(), 'DELETE').done(function() {
-					self.samples.remove(sample);
-				});
-			}
-			
-			self.beginLogin = function() {
-				username = getCookie("username");
-				password = getCookie("password");
-				if (username.length > 0 || password.length > 0) 
-				{
-					self.login(username, password);
-				} 
-				else 
-				{
-					$('#login').modal('show');
-				}
-			}
-			self.login = function(username, password) {
-
-				self.username = username;
-				self.password = password;
-
-				document.cookie = "username= " + username + ";";
-				document.cookie = "password= " + password + ";";
-
-				self.ajax(self.samplesURI, 'GET').done(function(data) {
-					for (var i = 0; i < data.samples.length; i++) {
-						self.samples.push({
-							uri: ko.observable(data.samples[i].uri),
-							sff: ko.observable(data.samples[i].sff),
-							target: ko.observable(data.samples[i].target),
-							mid: ko.observable(data.samples[i].mid),
-							mid_set: ko.observable(data.samples[i].mid_set),
-							plate: ko.observable(data.samples[i].plate),
-						});
-					}
-				}).fail(function(jqXHR) {
-					if(jqXHR.status = 403) {
-						setTimeout(self.beginLogin, 500);
-					}
-				});
-			}
-
-			self.beginLogin();
-		}
-
-		function AddSamplesViewModel() {
-			var self = this;
-			self.sff = ko.observable();
-			self.target = ko.observable();
-			self.mid = ko.observable();
-			self.mid_set = ko.observable();
-			self.plate = ko.observable();
-			
-			self.addSample = function() {
-				$('#add').modal('hide');
-				samplesViewModel.add({
-					sff: self.sff(),
-					target: self.target(),
-					mid: self.mid(),
-					mid_set: self.mid_set(),
-					plate: self.plate(),
-				});
-				self.sff("");
-				self.target("");
-				self.mid("");
-				self.mid_set("");
-				self.plate("");
-			}
-		}
-
-		function EditSamplesViewModel() {
-			var self = this;
-			self.sff = ko.observable();
-			self.target = ko.observable();
-			self.mid = ko.observable();
-			self.mid_set = ko.observable();
-			self.plate = ko.observable();
-			
-			self.setSample = function(sample) {
-				self.sample = sample;
-				self.sff(sample.sff());
-				self.target(sample.target());
-				self.mid(sample.mid());
-				self.mid_set(sample.mid_set());
-				self.plate(sample.plate());
-			}
-			self.editSample = function() {
-				$('#edit').modal('hide');
-				samplesViewModel.edit(self.sample, {
-					sff: self.sff(),
-					target: self.target(),
-					mid: self.mid(),
-					mid_set: self.mid_set(),
-					plate: self.plate(),
-				});
-				self.sff("");
-				self.target("");
-				self.mid("");
-				self.mid_set("");
-				self.plate("");
-			}
-		}
-
-		function LoginViewModel() {
-			var self = this;
-			self.username = ko.observable();
-			self.password = ko.observable();
-			
-			self.login = function() {
-				$('#login').modal('hide');
-				samplesViewModel.login(self.username(),self.password());
-			}
-		}
-
-		var samplesViewModel = new SamplesViewModel();
-		var addSamplesViewModel = new AddSamplesViewModel();
-		var editSamplesViewModel = new EditSamplesViewModel();
+	<script>
 		var loginViewModel = new LoginViewModel();
+		ko.applyBindings(loginViewModel, $('#login')[0]);
 
+		var samplesViewModel = new SamplesViewModel(loginViewModel);
+		var addSamplesViewModel = new AddSamplesViewModel(loginViewModel);
+		var editSamplesViewModel = new EditSamplesViewModel(loginViewModel);
 		ko.applyBindings(samplesViewModel, $('#main')[0]);
 		ko.applyBindings(addSamplesViewModel, $('#add')[0]);
 		ko.applyBindings(editSamplesViewModel, $('#edit')[0]);
-		ko.applyBindings(loginViewModel, $('#login')[0]);
+
+		loginViewModel.loginHandler = function (username, password) {
+			samplesViewModel.ajax(samplesViewModel.samplesURI, 'GET').done(function(data) {
+				for (var i = 0; i < data.samples.length; i++) {
+					samplesViewModel.samples.push({
+						uri: ko.observable(data.samples[i].uri),
+						sff: ko.observable(data.samples[i].sff),
+						target: ko.observable(data.samples[i].target),
+						mid: ko.observable(data.samples[i].mid),
+						mid_set: ko.observable(data.samples[i].mid_set),
+						run: ko.observable(data.samples[i].run),
+					});
+				}
+			}).fail(function(jqXHR) {
+				if(jqXHR.status = 403) {
+					setTimeout(self.beginLogin, 500);
+				}
+			});
+		}
+		loginViewModel.beginLogin();
 	</script>
+
 	<script>
 		$(document).ready(function(){
 			$(function(){
