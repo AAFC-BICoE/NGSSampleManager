@@ -15,7 +15,6 @@ auth = HTTPBasicAuth()
 app = Flask(__name__, static_url_path = "")
 api = Api(app)
 
-import views.index
 import views.sample
 import views.run
 
