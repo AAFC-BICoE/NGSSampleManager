@@ -46,7 +46,6 @@ while curr_row < num_rows:
 	)
 
 	sample = Sample(
-		run=run,
 		shipped=worksheet.cell_value(curr_row, entity_to_index['shipped']),
 		received=worksheet.cell_value(curr_row, entity_to_index['received']),
 		project=worksheet.cell_value(curr_row, entity_to_index['project']),
@@ -82,6 +81,9 @@ while curr_row < num_rows:
 		tm_c_min=worksheet.cell_value(curr_row, entity_to_index['tm_c_min']),
 		tm_c_avg=worksheet.cell_value(curr_row, entity_to_index['tm_c_avg']),
 	)
+
+	run.samples.append(sample)
+
 	session.add(sample)
 session.commit()
 
