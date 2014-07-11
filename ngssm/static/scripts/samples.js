@@ -35,7 +35,7 @@ function SamplesViewModel(loginViewModel) {
 				target: ko.observable(data.sample.target),
 				mid: ko.observable(data.sample.mid),
 				mid_set: ko.observable(data.sample.mid_set),
-				run: ko.observable(data.sample.run),
+				run_id: ko.observable(data.sample.run_id),
 				uri: ko.observable(data.sample.uri),
 			});
 		});
@@ -56,7 +56,7 @@ function SamplesViewModel(loginViewModel) {
 		self.samples()[i].target(newSample.target);
 		self.samples()[i].mid(newSample.mid);
 		self.samples()[i].mid_set(newSample.mid_set);
-		self.samples()[i].run(newSample.run);
+		self.samples()[i].run_id(newSample.run_id);
 	}
 
 	self.remove = function(sample) {
@@ -73,7 +73,7 @@ function AddSamplesViewModel() {
 	self.target = ko.observable();
 	self.mid = ko.observable();
 	self.mid_set = ko.observable();
-	self.run= ko.observable();
+	self.run_id = ko.observable();
 	
 	self.addSample = function() {
 		$('#add').modal('hide');
@@ -82,13 +82,13 @@ function AddSamplesViewModel() {
 			target: self.target(),
 			mid: self.mid(),
 			mid_set: self.mid_set(),
-			run: self.run(),
+			run_id: self.run_id(),
 		});
 		self.sff("");
 		self.target("");
 		self.mid("");
 		self.mid_set("");
-		self.run("");
+		self.run_id("");
 	}
 }
 
@@ -98,7 +98,7 @@ function EditSamplesViewModel() {
 	self.target = ko.observable();
 	self.mid = ko.observable();
 	self.mid_set = ko.observable();
-	self.run= ko.observable();
+	self.run_id = ko.observable();
 	
 	self.setSample = function(sample) {
 		self.sample = sample;
@@ -106,7 +106,7 @@ function EditSamplesViewModel() {
 		self.target(sample.target());
 		self.mid(sample.mid());
 		self.mid_set(sample.mid_set());
-		self.run(sample.run());
+		self.run_id(sample.run_id());
 	}
 	self.editSample = function() {
 		$('#edit').modal('hide');
@@ -115,12 +115,12 @@ function EditSamplesViewModel() {
 			target: self.target(),
 			mid: self.mid(),
 			mid_set: self.mid_set(),
-			run: self.run(),
+			run_id: self.run_id(),
 		});
 		self.sff("");
 		self.target("");
 		self.mid("");
 		self.mid_set("");
-		self.run("");
+		self.run_id("");
 	}
 }

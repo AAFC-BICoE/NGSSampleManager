@@ -23,7 +23,7 @@
 	<div id="main" class="container">
 		<table id="sampleTable" class="table table-striped">
 			<tr>
-				<td><b>Plate</b></td>
+				<td><b>Run</b></td>
 				<td><b>SFF</b></td>
 				<td><b>MID</b></td>
 				<td><b>Target</b></td>
@@ -33,7 +33,7 @@
 			<!-- ko foreach: samples -->
 			<tr>
 				<td>
-						<p><b data-bind="text: plate"></b></p>
+						<p><b data-bind="text: run_id"></b></p>
 				</td>
 				<td>
 						<p><b data-bind="text: sff"></b></p>
@@ -65,9 +65,9 @@
 		<div class="modal-body">
 			<form class="form-horizontal">
 				<div class="control-group">
-					<label class="control-label" for="inputTask">Plate</label>
+					<label class="control-label" for="inputTask">Run</label>
 					<div class="controls">
-						<input data-bind="value: plate" type="text" id="inputPlate" placeholder="Plate" style="width: 150px;">
+						<input data-bind="value: run_id" type="int" id="inputRun" placeholder="Run" style="width: 150px;">
 					</div>
 				</div>
 				<div class="control-group">
@@ -91,9 +91,9 @@
 		<div class="modal-body">
 			<form class="form-horizontal">
 				<div class="control-group">
-					<label class="control-label" for="inputPlate">Plate</label>
+					<label class="control-label" for="inputRun">Run</label>
 					<div class="controls">
-						<input data-bind="value: plate" type="text" id="inputPlate" placeholder="Plate" style="width: 150px;">
+						<input data-bind="value: run_id" type="int" id="inputRun" placeholder="Run" style="width: 150px;">
 					</div>
 				</div>
 				<div class="control-group">
@@ -159,7 +159,7 @@
 						target: ko.observable(data.samples[i].target),
 						mid: ko.observable(data.samples[i].mid),
 						mid_set: ko.observable(data.samples[i].mid_set),
-						run: ko.observable(data.samples[i].run),
+						run_id: ko.observable(data.samples[i].run_id),
 					});
 				}
 			}).fail(function(jqXHR) {
