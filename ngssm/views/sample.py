@@ -119,8 +119,8 @@ class SampleListAPI(Resource):
 		# the filter_by arguments using **
 		kwargs = {}
 		for k, v in args.iteritems():
-			if v != None and len(v) > 0:
-				kwargs[k]=v
+			if v != None and ((type(v) == str and len(v) > 0) or (type(v) == int and v > 0)):
+					kwargs[k]=v
 
 		if len(kwargs) > 0:
 			print "Applying ", len(kwargs), " filters"
