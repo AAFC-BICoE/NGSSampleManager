@@ -25,8 +25,8 @@ function SamplesViewModel(loginViewModel) {
 		return $.ajax(request);
 	}
 
-	self.beginAdd = function() {
-		$('#add').modal('show');
+	self.beginSampleAdd = function() {
+		$('#sampleAddDialog').modal('show');
 	}
 	self.add = function(sample) {
 		self.ajax(self.samplesURI, 'POST', sample).done(function(data) {
@@ -40,10 +40,9 @@ function SamplesViewModel(loginViewModel) {
 			});
 		});
 	}
-	
-	self.beginEdit = function(sample) {
+	self.beginSampleEdit = function(sample) {
 		editSamplesViewModel.setSample(sample);
-		$('#edit').modal('show');
+		$('#sampleEditDialog').modal('show');
 	}
 	self.edit = function(sample, data) {
 		self.ajax(sample.uri(), 'PUT', data).done(function(res) {
@@ -58,13 +57,11 @@ function SamplesViewModel(loginViewModel) {
 		self.samples()[i].mid_set(newSample.mid_set);
 		self.samples()[i].run_id(newSample.run_id);
 	}
-
 	self.remove = function(sample) {
 		self.ajax(sample.uri(), 'DELETE').done(function() {
 			self.samples.remove(sample);
 		});
 	}
-	
 }
 
 function AddSamplesViewModel() {
@@ -76,7 +73,7 @@ function AddSamplesViewModel() {
 	self.run_id = ko.observable();
 	
 	self.addSample = function() {
-		$('#add').modal('hide');
+		$('#sampleAddDialog').modal('hide');
 		samplesViewModel.add({
 			sff: self.sff(),
 			target: self.target(),
@@ -109,7 +106,7 @@ function EditSamplesViewModel() {
 		self.run_id(sample.run_id());
 	}
 	self.editSample = function() {
-		$('#edit').modal('hide');
+		$('#sampleEditDialog').modal('hide');
 		samplesViewModel.edit(self.sample, {
 			sff: self.sff(),
 			target: self.target(),
