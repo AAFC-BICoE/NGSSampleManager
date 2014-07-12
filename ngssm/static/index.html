@@ -6,7 +6,7 @@
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
 <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
 </head>
 <body>
@@ -20,7 +20,9 @@
 			</ul>
 		</div>
 	</div>
-	<div id="main" class="container">
+
+<!-- Start Sample Markup; Use Components after knockout 3.2 is released. -->
+	<div id="sampleContainer" class="container">
 		<table id="sampleTable" class="table table-striped">
 			<tr>
 				<td><b>Run</b></td>
@@ -45,29 +47,28 @@
 						<p><b data-bind="text: target"></b></p>
 				</td>
 				<td>
-						<p><b data-bind="text: mid_set"></b></p>
 						<p><b data-bind="text: uri"></b></p>
 				</td>
 				<td>
-					<button data-bind="click: $parent.beginEdit" class="btn">Edit</button>
+					<button data-bind="click: $parent.beginSampleEdit" class="btn">Edit</button>
 					<button data-bind="click: $parent.remove" class="btn">Delete</button>
 				</td>
 			</tr>
 			<!-- /ko -->
 		</table>
-		<button data-bind="click: beginAdd" class="btn">Add Sample</button>
+		<button data-bind="click: beginSampleAdd" class="btn">Add Sample</button>
 	</div>
-	<div id="add" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+	<div id="sampleAddDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addSampleDialogLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h3 id="addDialogLabel">Add Sample</h3>
+			<h3 id="addSampleDialogLabel">Add Sample</h3>
 		</div>
 		<div class="modal-body">
 			<form class="form-horizontal">
 				<div class="control-group">
-					<label class="control-label" for="inputTask">Run</label>
+					<label class="control-label" for="inputTask">Run ID</label>
 					<div class="controls">
-						<input data-bind="value: run_id" type="int" id="inputRun" placeholder="Run" style="width: 150px;">
+						<input data-bind="value: run_id" type="int" id="inputRun" placeholder="Run ID" style="width: 150px;">
 					</div>
 				</div>
 				<div class="control-group">
@@ -83,7 +84,7 @@
 			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
 		</div>
 	</div>
-	<div id="edit" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="editDialogLabel" aria-hidden="true">
+	<div id="sampleEditDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="editDialogLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 			<h3 id="editDialogLabel">Edit Sample</h3>
@@ -109,6 +110,106 @@
 			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
 		</div>
 	</div>
+<!-- End Sample Markup; Use Components after knockout 3.2 is released. -->
+
+<!-- Start Run Markup; Use Components after knockout 3.2 is released. -->
+	<div id="runContainer" class="container">
+		<table id="runTable" class="table table-striped">
+			<tr>
+				<td><b>Mid Set</b></td>
+				<td><b>Plate</b></td>
+				<td><b>Type</b></td>
+				<td><b>Details</b></td>
+			</tr>
+			<!-- ko foreach: runs -->
+			<tr>
+				<td>
+						<p><b data-bind="text: mid_set"></b></p>
+				</td>
+				<td>
+						<p><b data-bind="text: plate"></b></p>
+				</td>
+				<td>
+						<p><b data-bind="text: type"></b></p>
+				</td>
+				<td>
+						<p><b data-bind="text: uri"></b></p>
+				</td>
+				<td>
+					<button data-bind="click: $parent.beginRunEdit" class="btn">Edit</button>
+					<button data-bind="click: $parent.remove" class="btn">Delete</button>
+				</td>
+			</tr>
+			<!-- /ko -->
+		</table>
+		<button data-bind="click: beginRunAdd" class="btn">Add Run</button>
+	</div>
+	<div id="runAddDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addRunDialogLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="addRunDialogLabel">Add Run</h3>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">Plate</label>
+					<div class="controls">
+						<input data-bind="value: plate" type="text" id="inputPlate" placeholder="Plate Name" style="width: 300px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">MidSet</label>
+					<div class="controls">
+						<input data-bind="value: mid_set" type="text" id="inputMidSet" placeholder="MidSet Label" style="width: 300px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">Type</label>
+					<div class="controls">
+						<input data-bind="value: type" type="text" id="inputType" placeholder="Type Name" style="width: 300px;">
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button data-bind="click: addRun" class="btn btn-primary">Add Run</button>
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		</div>
+	</div>
+	<div id="runEditDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="editDialogLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="editDialogLabel">Edit Run</h3>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">Plate</label>
+					<div class="controls">
+						<input data-bind="value: plate" type="text" id="inputPlate" placeholder="Plate Name" style="width: 300px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">MidSet</label>
+					<div class="controls">
+						<input data-bind="value: mid_set" type="text" id="inputMidSet" placeholder="MidSet Label" style="width: 300px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">Type</label>
+					<div class="controls">
+						<input data-bind="value: type" type="text" id="inputType" placeholder="Type Name" style="width: 300px;">
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button data-bind="click: editRun" class="btn btn-primary">Edit Run</button>
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		</div>
+	</div>
+<!-- End Run Markup; Use Components after knockout 3.2 is released. -->
+
 	<div id="login" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="loginDialogLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -138,6 +239,7 @@
 
 	<script type="text/javascript" src="scripts/login.js"></script>
 	<script type="text/javascript" src="scripts/samples.js"></script>
+	<script type="text/javascript" src="scripts/runs.js"></script>
 
 	<script>
 		var loginViewModel = new LoginViewModel();
@@ -146,9 +248,15 @@
 		var samplesViewModel = new SamplesViewModel(loginViewModel);
 		var addSamplesViewModel = new AddSamplesViewModel(loginViewModel);
 		var editSamplesViewModel = new EditSamplesViewModel(loginViewModel);
-		ko.applyBindings(samplesViewModel, $('#main')[0]);
-		ko.applyBindings(addSamplesViewModel, $('#add')[0]);
-		ko.applyBindings(editSamplesViewModel, $('#edit')[0]);
+		var runsViewModel = new RunsViewModel(loginViewModel);
+		var addRunsViewModel = new AddRunsViewModel(loginViewModel);
+		var editRunsViewModel = new EditRunsViewModel(loginViewModel);
+		ko.applyBindings(samplesViewModel, $('#sampleContainer')[0]);
+		ko.applyBindings(addSamplesViewModel, $('#sampleAddDialog')[0]);
+		ko.applyBindings(editSamplesViewModel, $('#sampleEditDialog')[0]);
+		ko.applyBindings(runsViewModel, $('#runContainer')[0]);
+		ko.applyBindings(addRunsViewModel, $('#runAddDialog')[0]);
+		ko.applyBindings(editRunsViewModel, $('#runEditDialog')[0]);
 
 		loginViewModel.loginHandler = function (username, password) {
 			samplesViewModel.ajax(samplesViewModel.samplesURI, 'GET').done(function(data) {
@@ -167,6 +275,22 @@
 					setTimeout(self.beginLogin, 500);
 				}
 			});
+
+			runsViewModel.ajax(runsViewModel.runsURI, 'GET').done(function(data) {
+				for (var i = 0; i < data.runs.length; i++) {
+					runsViewModel.runs.push({
+						uri: ko.observable(data.runs[i].uri),
+						mid_set: ko.observable(data.runs[i].mid_set),
+						plate: ko.observable(data.runs[i].plate),
+						type: ko.observable(data.runs[i].type),
+					});
+				}
+			}).fail(function(jqXHR) {
+				if(jqXHR.status = 403) {
+					setTimeout(self.beginLogin, 500);
+				}
+			});
+
 		}
 		loginViewModel.beginLogin();
 	</script>
