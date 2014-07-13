@@ -3,6 +3,8 @@ function RunsViewModel(loginViewModel) {
 	self.runsURI = 'http://localhost:5000/ngssm/api/v1.0/runs';
 	self.runs = ko.observableArray();
 
+	self.observable = new Observable(self);
+
 	self.ajax = function(uri, method, data) {
 		var request = {
 			url: uri,
@@ -56,6 +58,7 @@ function RunsViewModel(loginViewModel) {
 	self.remove = function(run) {
 		self.ajax(run.uri(), 'DELETE').done(function() {
 			self.runs.remove(run);
+			self.notifyObservers('DELETE');
 		});
 	}
 }
