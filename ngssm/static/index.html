@@ -240,6 +240,7 @@
 	<script type="text/javascript" src="scripts/login.js"></script>
 	<script type="text/javascript" src="scripts/samples.js"></script>
 	<script type="text/javascript" src="scripts/runs.js"></script>
+	<script type="text/javascript" src="scripts/observable.js"></script>
 
 	<script>
 		var loginViewModel = new LoginViewModel();
@@ -251,6 +252,10 @@
 		var runsViewModel = new RunsViewModel(loginViewModel);
 		var addRunsViewModel = new AddRunsViewModel(loginViewModel);
 		var editRunsViewModel = new EditRunsViewModel(loginViewModel);
+
+		// TODO refreshing the list is slow; maybe delete only affected entries (or look at performance of filling list)?
+		runsViewModel.registerObserver(new Observer(refreshSamplesViewModel));
+		
 		ko.applyBindings(samplesViewModel, $('#sampleContainer')[0]);
 		ko.applyBindings(addSamplesViewModel, $('#sampleAddDialog')[0]);
 		ko.applyBindings(editSamplesViewModel, $('#sampleEditDialog')[0]);
@@ -259,7 +264,32 @@
 		ko.applyBindings(editRunsViewModel, $('#runEditDialog')[0]);
 
 		loginViewModel.loginHandler = function (username, password) {
+			refreshSamplesViewModel();
+			refreshRunsViewModel();
+		}
+		loginViewModel.beginLogin();
+
+		function refreshRunsViewModel() {
+			runsViewModel.ajax(runsViewModel.runsURI, 'GET').done(function(data) {
+				runsViewModel.runs.removeAll();
+				for (var i = 0; i < data.runs.length; i++) {
+					runsViewModel.runs.push({
+						uri: ko.observable(data.runs[i].uri),
+						mid_set: ko.observable(data.runs[i].mid_set),
+						plate: ko.observable(data.runs[i].plate),
+						type: ko.observable(data.runs[i].type),
+					});
+				}
+			}).fail(function(jqXHR) {
+				if(jqXHR.status = 403) {
+					setTimeout(self.beginLogin, 500);
+				}
+			});
+		}
+
+		function refreshSamplesViewModel() {
 			samplesViewModel.ajax(samplesViewModel.samplesURI, 'GET').done(function(data) {
+				samplesViewModel.samples.removeAll();
 				for (var i = 0; i < data.samples.length; i++) {
 					samplesViewModel.samples.push({
 						uri: ko.observable(data.samples[i].uri),
@@ -275,24 +305,7 @@
 					setTimeout(self.beginLogin, 500);
 				}
 			});
-
-			runsViewModel.ajax(runsViewModel.runsURI, 'GET').done(function(data) {
-				for (var i = 0; i < data.runs.length; i++) {
-					runsViewModel.runs.push({
-						uri: ko.observable(data.runs[i].uri),
-						mid_set: ko.observable(data.runs[i].mid_set),
-						plate: ko.observable(data.runs[i].plate),
-						type: ko.observable(data.runs[i].type),
-					});
-				}
-			}).fail(function(jqXHR) {
-				if(jqXHR.status = 403) {
-					setTimeout(self.beginLogin, 500);
-				}
-			});
-
 		}
-		loginViewModel.beginLogin();
 	</script>
 
 	<script>

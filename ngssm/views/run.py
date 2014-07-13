@@ -47,8 +47,6 @@ class RunAPI(Resource):
 		
 	@auth.login_required
 	def delete(self, id):
-		# TODO Cascade delete for associated samples...
-		print "Received delete request for: ", id
 		session = app.session_maker()
 		run = session.query(Run).filter_by(id=id).first()
 		if run == None:
