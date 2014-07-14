@@ -2,6 +2,8 @@ function LoginViewModel() {
 	var self = this;
 	self.username = ko.observable();
 	self.password = ko.observable();
+
+	self.observable = new Observable(self);
 	
 	self.login = function() {
 		$('#login').modal('hide');
@@ -29,7 +31,7 @@ function LoginViewModel() {
 		document.cookie = "username= " + username + ";";
 		document.cookie = "password= " + password + ";";
 
-		self.loginHandler(username, password);
+		self.notifyObservers('LOGIN_COMPLETE');
 	}
 }
 
