@@ -10,13 +10,12 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
 </head>
 <body>
-	<div class="navbar">
+	<div id="navbar" class="navbar">
 		<div class="navbar-inner">
 			<a class="brand" href="#">Metagenomics Sample Client Demo</a>
-			<ul class="nav">
-				<li class="active"><a href="#">Home</a></li>
-				<li><a href="#">Runs</a></li>
-				<li><a href="#">Link</a></li>
+			<ul class="nav" data-bind="foreach: folders">
+			    <li data-bind = "css: $data == $parent.chosenFolderId() ? 'active' : 'inactive'">
+               			<a data-bind = "click: $parent.goToFolder, text: $data"></a></li>
 			</ul>
 		</div>
 	</div>
@@ -210,7 +209,7 @@
 	</div>
 <!-- End Run Markup; Use Components after knockout 3.2 is released. -->
 
-	<div id="login" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="loginDialogLabel" aria-hidden="true">
+	<div id="loginDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="loginDialogLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 			<h3 id="loginDialogLabel">Login</h3>
@@ -237,75 +236,14 @@
 	</div>
 
 
+	<script type="text/javascript" src="scripts/ngssm.js"></script>
 	<script type="text/javascript" src="scripts/login.js"></script>
 	<script type="text/javascript" src="scripts/samples.js"></script>
 	<script type="text/javascript" src="scripts/runs.js"></script>
 	<script type="text/javascript" src="scripts/observable.js"></script>
 
 	<script>
-		var loginViewModel = new LoginViewModel();
-		ko.applyBindings(loginViewModel, $('#login')[0]);
-
-		var samplesViewModel = new SamplesViewModel(loginViewModel);
-		var addSamplesViewModel = new AddSamplesViewModel(loginViewModel);
-		var editSamplesViewModel = new EditSamplesViewModel(loginViewModel);
-		var runsViewModel = new RunsViewModel(loginViewModel);
-		var addRunsViewModel = new AddRunsViewModel(loginViewModel);
-		var editRunsViewModel = new EditRunsViewModel(loginViewModel);
-
-		// TODO refreshing the list is slow; maybe delete only affected entries (or look at performance of filling list)?
-		runsViewModel.registerObserver(new Observer(refreshSamplesViewModel));
-		
-		ko.applyBindings(samplesViewModel, $('#sampleContainer')[0]);
-		ko.applyBindings(addSamplesViewModel, $('#sampleAddDialog')[0]);
-		ko.applyBindings(editSamplesViewModel, $('#sampleEditDialog')[0]);
-		ko.applyBindings(runsViewModel, $('#runContainer')[0]);
-		ko.applyBindings(addRunsViewModel, $('#runAddDialog')[0]);
-		ko.applyBindings(editRunsViewModel, $('#runEditDialog')[0]);
-
-		loginViewModel.loginHandler = function (username, password) {
-			refreshSamplesViewModel();
-			refreshRunsViewModel();
-		}
-		loginViewModel.beginLogin();
-
-		function refreshRunsViewModel() {
-			runsViewModel.ajax(runsViewModel.runsURI, 'GET').done(function(data) {
-				runsViewModel.runs.removeAll();
-				for (var i = 0; i < data.runs.length; i++) {
-					runsViewModel.runs.push({
-						uri: ko.observable(data.runs[i].uri),
-						mid_set: ko.observable(data.runs[i].mid_set),
-						plate: ko.observable(data.runs[i].plate),
-						type: ko.observable(data.runs[i].type),
-					});
-				}
-			}).fail(function(jqXHR) {
-				if(jqXHR.status = 403) {
-					setTimeout(self.beginLogin, 500);
-				}
-			});
-		}
-
-		function refreshSamplesViewModel() {
-			samplesViewModel.ajax(samplesViewModel.samplesURI, 'GET').done(function(data) {
-				samplesViewModel.samples.removeAll();
-				for (var i = 0; i < data.samples.length; i++) {
-					samplesViewModel.samples.push({
-						uri: ko.observable(data.samples[i].uri),
-						sff: ko.observable(data.samples[i].sff),
-						target: ko.observable(data.samples[i].target),
-						mid: ko.observable(data.samples[i].mid),
-						mid_set: ko.observable(data.samples[i].mid_set),
-						run_id: ko.observable(data.samples[i].run_id),
-					});
-				}
-			}).fail(function(jqXHR) {
-				if(jqXHR.status = 403) {
-					setTimeout(self.beginLogin, 500);
-				}
-			});
-		}
+		ko.applyBindings(new NgssmViewModel(), $('#navbar')[0]);
 	</script>
 
 	<script>
