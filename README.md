@@ -49,11 +49,11 @@ The general syntax for a URL follows (examples below):
 
 #### Update a Run
 
-	curl -u miguel:python -i -H "Content-Type: application/json" -X PUT -d '{"mid_set":"54.2"}' http://localhost:5000/ngssm/api/v1.0/run/1
+	curl -u miguel:python -i -H "Content-Type: application/json" -X PUT -d '{"mid_set":"54.2"}' http://localhost:5000/ngssm/api/v1.0/runs/1
 
 #### Delete a Run
 
-	curl -u miguel:python -i -X DELETE http://localhost:5000/ngssm/api/v1.0/run/3
+	curl -u miguel:python -i -X DELETE http://localhost:5000/ngssm/api/v1.0/runs/3
 
 ### Samples
 
