@@ -15,24 +15,15 @@ api = Api(app)
 
 import views.sample
 
-#app.config.update(dict(
-#	DATABASE_URI="sqlite:///ngssm.db",
-#	DEBUG=True,
-#	USERNAME='miguel',
-#	PASSWORD='python',
-#))
+app.config.update(dict(
+	DATABASE_URI="sqlite:///ngssm.db",
+	DEBUG=True,
+	USERNAME='miguel',
+	PASSWORD='python',
+# De-comment following line to make the app visible across the network.
+#	HOST='0.0.0.0'
+))
 app.config.from_envvar('APP_SETTINGS', silent=True)
-
-def loadconfigs():
-	app.config.update(dict(
-		DATABASE_URI="sqlite:///ngssm.db",
-		DEBUG=True,
-		USERNAME='miguel',
-		PASSWORD='python',
-		HOST='0.0.0.0'
-	))
-
-loadconfigs()
 
 def connect_db():
 	"""Connects to the specified database."""
@@ -68,6 +59,5 @@ def root():
 
 if __name__ == '__main__':
 	connect_db()
-	loadconfigs()
 	app.run()
 
