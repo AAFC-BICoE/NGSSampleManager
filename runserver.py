@@ -1,9 +1,6 @@
 #! ngssmenv/bin/python
 
-from ngssm import app, connect_db, loadconfigs
-from flask import Flask, jsonify, make_response
-from flask.ext.httpauth import HTTPBasicAuth
-from flask.ext.restful import Api
+from ngssm import app, connect_db
 
 connect_db()
 if 'HOST' in app.config:
