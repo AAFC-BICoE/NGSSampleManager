@@ -144,10 +144,8 @@
 			return "";
 		}
 		function SamplesViewModel() {
-			var host = location.origin;
-			var URI = host.concat("/ngssm/api/v1.0/samples");
 			var self = this;
-			self.samplesURI = URI;
+			self.samplesURI = location.origin.concat("/ngssm/api/v1.0/samples");
 			self.username = "";
 			self.password = "";
 			self.samples = ko.observableArray();
