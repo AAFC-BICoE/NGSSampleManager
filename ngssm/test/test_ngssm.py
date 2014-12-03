@@ -100,6 +100,32 @@ class ApplicationContextTests(unittest.TestCase):
 		print rv.data
 		assert '"sample_count": 1' in rv.data
 
+	def test_sample_add_missing_run(self):
+		"""INCOMPLETE: Verify addition of a sample.  Should have id 1 and sample count should be 1."""
+		h = self.get_headers(False)
+		hc = self.get_headers(True)
+
+		# add required run; verify there are no current runs
+		rv = self.app.get('/ngssm/api/v1.0/runs', headers=h)
+		print rv.data
+		assert '"run_count": 0' in rv.data
+
+		# add sample
+		rv = self.app.get('/ngssm/api/v1.0/samples', headers=h)
+		print rv.data
+		assert '"sample_count": 0' in rv.data
+		rv = self.app.post('/ngssm/api/v1.0/samples', data='{"run_id":"1"}', headers=hc)
+		print rv.data
+		# TODO this should fail; need to then catch error condition
+		#assert 'error' in rv.data
+
+		# retrieve samples
+		rv = self.app.get('/ngssm/api/v1.0/samples', headers=h)
+		print rv.data
+		assert '"sample_count": 0' in rv.data
+
+		
+
 	def test_sample_update(self):
 		"""Verify update of a sample."""
 		h = self.get_headers(False)
