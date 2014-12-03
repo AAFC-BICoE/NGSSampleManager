@@ -20,9 +20,10 @@ app.config.update(dict(
 	DEBUG=True,
 	USERNAME='miguel',
 	PASSWORD='python',
+# De-comment following line to make the app visible across the network.
+#	HOST='0.0.0.0'
 ))
 app.config.from_envvar('APP_SETTINGS', silent=True)
-
 
 def connect_db():
 	"""Connects to the specified database."""
