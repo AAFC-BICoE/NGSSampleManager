@@ -1,6 +1,6 @@
 function RunsViewModel(loginViewModel) {
 	var self = this;
-	self.runsURI = 'http://localhost:5000/ngssm/api/v1.0/runs';
+	self.runsURI = location.origin.concat("/ngssm/api/v1.0/runs");
 	self.runs = ko.observableArray();
 
 	self.observable = new Observable(self);
