@@ -1,7 +1,6 @@
 function RunsViewModel(ngssmViewModel) {
 	var self = this;
-	self.loginViewModel = ngssmViewModel.loginViewModel;
-	self.editRunsViewModel = ngssmViewModel.editRunsViewModel;
+	self.ngssmViewModel = ngssmViewModel;
 	self.runsURI = location.origin.concat("/ngssm/api/v1.0/runs");
 	self.runs = ko.observableArray();
 
@@ -17,7 +16,7 @@ function RunsViewModel(ngssmViewModel) {
 			data: JSON.stringify(data),
 			beforeSend: function (xhr) {
 				xhr.setRequestHeader("Authorization", 
-					"Basic " + btoa(self.loginViewModel.username + ":" + self.loginViewModel.password));
+					"Basic " + btoa(self.ngssmViewModel.loginViewModel.username + ":" + self.ngssmViewModel.loginViewModel.password));
 			},
 			error: function(jqXHR) {
 				console.log("ajax error " + jqXHR.status);
@@ -45,8 +44,7 @@ function RunsViewModel(ngssmViewModel) {
 	}
 	
 	self.beginRunEdit = function(run) {
-		window.alert("editRunsViewModel: " + self.editRunsViewModel);
-		self.editRunsViewModel.setRun(run);
+		self.ngssmViewModel.editRunsViewModel.setRun(run);
 		$('#runEditDialog').modal('show');
 	}
 	self.edit = function(run, data) {
@@ -70,14 +68,14 @@ function RunsViewModel(ngssmViewModel) {
 
 function AddRunsViewModel(ngssmViewModel) {
 	var self = this;
-	self.runsViewModel = ngssmViewModel.runsViewModel;
+	self.ngssmViewModel = ngssmViewModel;
 	self.plate = ko.observable();
 	self.mid_set = ko.observable();
 	self.type = ko.observable();
 	
 	self.addRun = function() {
 		$('#runAddDialog').modal('hide');
-		self.runsViewModel.add({
+		self.ngssmViewModel.runsViewModel.add({
 			plate: self.plate(),
 			mid_set: self.mid_set(),
 			type: self.type(),
@@ -90,7 +88,7 @@ function AddRunsViewModel(ngssmViewModel) {
 
 function EditRunsViewModel(ngssmViewModel) {
 	var self = this;
-	self.runsViewModel = ngssmViewModel.runsViewModel;
+	self.ngssmViewModel = ngssmViewModel;
 	self.plate = ko.observable();
 	self.mid_set = ko.observable();
 	self.type = ko.observable();
@@ -103,7 +101,7 @@ function EditRunsViewModel(ngssmViewModel) {
 	}
 	self.editRun = function() {
 		$('#runEditDialog').modal('hide');
-		self.runsViewModel.edit(self.run, {
+		self.ngssmViewModel.runsViewModel.edit(self.run, {
 			plate: self.plate(),
 			mid_set: self.mid_set(),
 			type: self.type(),

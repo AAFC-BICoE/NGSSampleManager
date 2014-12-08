@@ -1,6 +1,6 @@
 function SamplesViewModel(ngssmViewModel) {
 	var self = this;
-	self.loginViewModel = ngssmViewModel.loginViewModel;
+	self.ngssmViewModel = ngssmViewModel;
 	self.samplesURI = location.origin.concat("/ngssm/api/v1.0/samples");
 	self.samples = ko.observableArray();
 
@@ -14,7 +14,7 @@ function SamplesViewModel(ngssmViewModel) {
 			data: JSON.stringify(data),
 			beforeSend: function (xhr) {
 				xhr.setRequestHeader("Authorization", 
-					"Basic " + btoa(self.loginViewModel.username + ":" + self.loginViewModel.password));
+					"Basic " + btoa(self.ngssmViewModel.loginViewModel.username + ":" + self.ngssmViewModel.loginViewModel.password));
 			},
 			error: function(jqXHR) {
 				console.log("ajax error " + jqXHR.status);
@@ -42,7 +42,7 @@ function SamplesViewModel(ngssmViewModel) {
 		});
 	}
 	self.beginSampleEdit = function(sample) {
-		editSamplesViewModel.setSample(sample);
+		self.ngssmViewModel.editSamplesViewModel.setSample(sample);
 		$('#sampleEditDialog').modal('show');
 	}
 	self.edit = function(sample, data) {
@@ -91,8 +91,9 @@ function AddSamplesViewModel(ngssmViewModel) {
 	}
 }
 
-function EditSamplesViewModel() {
+function EditSamplesViewModel(ngssmViewModel) {
 	var self = this;
+	self.ngssmViewModel = ngssmViewModel;
 	self.sff = ko.observable();
 	self.target = ko.observable();
 	self.mid = ko.observable();
@@ -109,7 +110,7 @@ function EditSamplesViewModel() {
 	}
 	self.editSample = function() {
 		$('#sampleEditDialog').modal('hide');
-		samplesViewModel.edit(self.sample, {
+		self.ngssmViewModel.samplesViewModel.edit(self.sample, {
 			sff: self.sff(),
 			target: self.target(),
 			mid: self.mid(),
