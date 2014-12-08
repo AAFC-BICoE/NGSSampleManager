@@ -1,5 +1,6 @@
-function RunsViewModel(loginViewModel) {
+function RunsViewModel(ngssmViewModel) {
 	var self = this;
+	self.ngssmViewModel = ngssmViewModel;
 	self.runsURI = location.origin.concat("/ngssm/api/v1.0/runs");
 	self.runs = ko.observableArray();
 
@@ -15,7 +16,7 @@ function RunsViewModel(loginViewModel) {
 			data: JSON.stringify(data),
 			beforeSend: function (xhr) {
 				xhr.setRequestHeader("Authorization", 
-					"Basic " + btoa(loginViewModel.username + ":" + loginViewModel.password));
+					"Basic " + btoa(self.ngssmViewModel.loginViewModel.username + ":" + self.ngssmViewModel.loginViewModel.password));
 			},
 			error: function(jqXHR) {
 				console.log("ajax error " + jqXHR.status);
@@ -26,6 +27,7 @@ function RunsViewModel(loginViewModel) {
 		}
 		return $.ajax(request);
 	}
+
 
 	self.beginRunAdd = function() {
 		$('#runAddDialog').modal('show');
@@ -40,8 +42,10 @@ function RunsViewModel(loginViewModel) {
 			});
 		});
 	}
+	
 	self.beginRunEdit = function(run) {
-		editRunsViewModel.setRun(run);
+		window.alert("editRunsViewModel: " + self.ngssmViewModel.editRunsViewModel);
+		self.ngssmViewModel.editRunsViewModel.setRun(run);
 		$('#runEditDialog').modal('show');
 	}
 	self.edit = function(run, data) {
@@ -63,15 +67,16 @@ function RunsViewModel(loginViewModel) {
 	}
 }
 
-function AddRunsViewModel() {
+function AddRunsViewModel(ngssmViewModel) {
 	var self = this;
+	self.ngssmViewModel = ngssmViewModel;
 	self.plate = ko.observable();
 	self.mid_set = ko.observable();
 	self.type = ko.observable();
 	
 	self.addRun = function() {
 		$('#runAddDialog').modal('hide');
-		runsViewModel.add({
+		self.ngssmViewModel.runsViewModel.add({
 			plate: self.plate(),
 			mid_set: self.mid_set(),
 			type: self.type(),
@@ -82,8 +87,9 @@ function AddRunsViewModel() {
 	}
 }
 
-function EditRunsViewModel() {
+function EditRunsViewModel(ngssmViewModel) {
 	var self = this;
+	self.ngssmViewModel = ngssmViewModel;
 	self.plate = ko.observable();
 	self.mid_set = ko.observable();
 	self.type = ko.observable();
@@ -96,7 +102,7 @@ function EditRunsViewModel() {
 	}
 	self.editRun = function() {
 		$('#runEditDialog').modal('hide');
-		runsViewModel.edit(self.run, {
+		self.ngssmViewModel.runsViewModel.edit(self.run, {
 			plate: self.plate(),
 			mid_set: self.mid_set(),
 			type: self.type(),
@@ -106,3 +112,14 @@ function EditRunsViewModel() {
 		self.type("");
 	}
 }
+
+//var samplesViewModel = new SamplesViewModel();
+//var addSamplesViewModel = new AddSamplesViewModel();
+//var editSamplesViewModel = new EditSamplesViewModel();
+
+//var runsViewModel = new RunsViewModel();
+//var addRunsViewModel = new AddRunsViewModel();
+//var editRunsViewModel = new EditRunsViewModel();
+
+//var loginViewModel = new LoginViewModel();
+//window.alert(loginViewModel)
