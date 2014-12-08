@@ -17,12 +17,12 @@ function NgssmViewModel() {
 	};
 
 	self.loginViewModel = new LoginViewModel();
-	self.samplesViewModel = new SamplesViewModel(self);
-	self.addSamplesViewModel = new AddSamplesViewModel(self);
+	self.samplesViewModel = new SamplesViewModel(self.loginViewModel);
+	self.addSamplesViewModel = new AddSamplesViewModel(self.loginViewModel);
 	self.editSamplesViewModel = new EditSamplesViewModel(self.loginViewModel);
-	self.runsViewModel = new RunsViewModel(self);
-	self.addRunsViewModel = new AddRunsViewModel(self);
-	self.editRunsViewModel = new EditRunsViewModel(self);
+	self.runsViewModel = new RunsViewModel(self.loginViewModel);
+	self.addRunsViewModel = new AddRunsViewModel(self.loginViewModel);
+	self.editRunsViewModel = new EditRunsViewModel(self.loginViewModel);
 
 	ko.applyBindings(self.loginViewModel, $('#loginDialog')[0]);
 	ko.applyBindings(self.samplesViewModel, $('#sampleContainer')[0]);
