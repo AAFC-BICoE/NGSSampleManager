@@ -1,7 +1,5 @@
-function RunsViewModel(ngssmViewModel) {
+function RunsViewModel(loginViewModel) {
 	var self = this;
-	self.loginViewModel = ngssmViewModel.loginViewModel;
-	self.editRunsViewModel = ngssmViewModel.editRunsViewModel;
 	self.runsURI = location.origin.concat("/ngssm/api/v1.0/runs");
 	self.runs = ko.observableArray();
 
@@ -17,7 +15,7 @@ function RunsViewModel(ngssmViewModel) {
 			data: JSON.stringify(data),
 			beforeSend: function (xhr) {
 				xhr.setRequestHeader("Authorization", 
-					"Basic " + btoa(self.loginViewModel.username + ":" + self.loginViewModel.password));
+					"Basic " + btoa(loginViewModel.username + ":" + loginViewModel.password));
 			},
 			error: function(jqXHR) {
 				console.log("ajax error " + jqXHR.status);
@@ -28,7 +26,6 @@ function RunsViewModel(ngssmViewModel) {
 		}
 		return $.ajax(request);
 	}
-
 
 	self.beginRunAdd = function() {
 		$('#runAddDialog').modal('show');
@@ -43,10 +40,8 @@ function RunsViewModel(ngssmViewModel) {
 			});
 		});
 	}
-	
 	self.beginRunEdit = function(run) {
-		window.alert("editRunsViewModel: " + self.editRunsViewModel);
-		self.editRunsViewModel.setRun(run);
+		editRunsViewModel.setRun(run);
 		$('#runEditDialog').modal('show');
 	}
 	self.edit = function(run, data) {
@@ -68,16 +63,15 @@ function RunsViewModel(ngssmViewModel) {
 	}
 }
 
-function AddRunsViewModel(ngssmViewModel) {
+function AddRunsViewModel() {
 	var self = this;
-	self.runsViewModel = ngssmViewModel.runsViewModel;
 	self.plate = ko.observable();
 	self.mid_set = ko.observable();
 	self.type = ko.observable();
 	
 	self.addRun = function() {
 		$('#runAddDialog').modal('hide');
-		self.runsViewModel.add({
+		runsViewModel.add({
 			plate: self.plate(),
 			mid_set: self.mid_set(),
 			type: self.type(),
@@ -88,9 +82,8 @@ function AddRunsViewModel(ngssmViewModel) {
 	}
 }
 
-function EditRunsViewModel(ngssmViewModel) {
+function EditRunsViewModel() {
 	var self = this;
-	self.runsViewModel = ngssmViewModel.runsViewModel;
 	self.plate = ko.observable();
 	self.mid_set = ko.observable();
 	self.type = ko.observable();
@@ -103,7 +96,7 @@ function EditRunsViewModel(ngssmViewModel) {
 	}
 	self.editRun = function() {
 		$('#runEditDialog').modal('hide');
-		self.runsViewModel.edit(self.run, {
+		runsViewModel.edit(self.run, {
 			plate: self.plate(),
 			mid_set: self.mid_set(),
 			type: self.type(),
@@ -113,14 +106,3 @@ function EditRunsViewModel(ngssmViewModel) {
 		self.type("");
 	}
 }
-
-//var samplesViewModel = new SamplesViewModel();
-//var addSamplesViewModel = new AddSamplesViewModel();
-//var editSamplesViewModel = new EditSamplesViewModel();
-
-//var runsViewModel = new RunsViewModel();
-//var addRunsViewModel = new AddRunsViewModel();
-//var editRunsViewModel = new EditRunsViewModel();
-
-//var loginViewModel = new LoginViewModel();
-//window.alert(loginViewModel)
