@@ -67,7 +67,7 @@ function SamplesViewModel(ngssmViewModel) {
 
 function AddSamplesViewModel(ngssmViewModel) {
 	var self = this;
-	self.samplesViewModel = ngssmViewModel.samplesViewModel;
+	self.ngssmViewModel = ngssmViewModel;
 	self.sff = ko.observable();
 	self.target = ko.observable();
 	self.mid = ko.observable();
@@ -76,7 +76,7 @@ function AddSamplesViewModel(ngssmViewModel) {
 	
 	self.addSample = function() {
 		$('#sampleAddDialog').modal('hide');
-		self.samplesViewModel.add({
+		self.ngssmViewModel.samplesViewModel.add({
 			sff: self.sff(),
 			target: self.target(),
 			mid: self.mid(),
