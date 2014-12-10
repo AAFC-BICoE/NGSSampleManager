@@ -11,6 +11,10 @@ run_fields = {
 		'uri': fields.Url('run')
 }
 
+run_uris = {
+		'uri': fields.Url('run')
+}
+
 class RunAPI(Resource):
 	def __init__(self):
 		self.reqparse = reqparse.RequestParser()
@@ -104,7 +108,7 @@ class RunListAPI(Resource):
 			print "Applying ", len(kwargs), " filters"
 			query = query.filter_by(**kwargs)
 
-		return { 'runs': marshal(query.all(), run_fields), 'run_count': query.count() }
+		return { 'runs': marshal(query.all(), run_uris), 'run_count': query.count() }
 
 api.add_resource(RunListAPI, '/ngssm/api/v1.0/runs', endpoint = 'runs')
 api.add_resource(RunAPI, '/ngssm/api/v1.0/runs/<int:id>', endpoint = 'run')

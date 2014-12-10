@@ -2,7 +2,6 @@ function RunsViewModel(loginViewModel) {
 	var self = this;
 	self.runsURI = location.origin.concat("/ngssm/api/v1.0/runs");
 	self.runs = ko.observableArray();
-
 	self.observable = new Observable(self);
 
 	self.ajax = function(uri, method, data) {

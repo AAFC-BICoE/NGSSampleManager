@@ -45,14 +45,20 @@ function NgssmViewModel() {
 	}
 
 	self.refreshRunsViewModel = function() {
-		self.runsViewModel.ajax(self.runsViewModel.runsURI, 'GET').done(function(data) {
+		self.runsViewModel.ajax(self.runsViewModel.runsURI, 'GET').done(function(tempdata) {
 			self.runsViewModel.runs.removeAll();
-			for (var i = 0; i < data.runs.length; i++) {
-				self.runsViewModel.runs.push({
-					uri: ko.observable(data.runs[i].uri),
-					mid_set: ko.observable(data.runs[i].mid_set),
-					plate: ko.observable(data.runs[i].plate),
-					type: ko.observable(data.runs[i].type),
+			for (var i = 1; i <= tempdata.runs.length; i++) {
+				self.runsViewModel.ajax(self.runsViewModel.runsURI.concat('/', i), 'GET').done(function(data) {
+					self.runsViewModel.runs.push({
+						uri: ko.observable(data.run.uri),
+						mid_set: ko.observable(data.run.mid_set),
+						plate: ko.observable(data.run.plate),
+						type: ko.observable(data.run.type),
+					});
+				}).fail(function(jqXHR) {
+					if(jqXHR.status = 403) {
+						setTimeout(self.beginLogin, 500);
+					}
 				});
 			}
 		}).fail(function(jqXHR) {
