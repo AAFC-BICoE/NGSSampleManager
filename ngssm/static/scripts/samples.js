@@ -51,12 +51,11 @@ function SamplesViewModel(ngssmViewModel) {
 		});
 	}
 	self.updateSample = function(sample, newSample) {
-		var i = self.samples.indexOf(sample);
-		self.samples()[i].sff(newSample.sff);
-		self.samples()[i].target(newSample.target);
-		self.samples()[i].mid(newSample.mid);
-		self.samples()[i].mid_set(newSample.mid_set);
-		self.samples()[i].run_id(newSample.run_id);
+		sample.sff(newSample.sff);
+		sample.target(newSample.target);
+		sample.mid(newSample.mid);
+		sample.mid_set(newSample.mid_set);
+		sample.run_id(newSample.run_id);
 	}
 	self.remove = function(sample) {
 		self.ajax(sample.uri(), 'DELETE').done(function() {
