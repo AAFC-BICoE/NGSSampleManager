@@ -23,18 +23,7 @@ function SamplesViewModel(ngssmViewModel) {
 		self.ngssmViewModel.editSamplesViewModel.setSample(sample);
 		$('#sampleEditDialog').modal('show');
 	}
-	self.edit = function(sample, data) {
-		self.ngssmViewModel.ajax(sample.uri(), 'PUT', data).done(function(res) {
-			self.updateSample(sample, res.sample);
-		});
-	}
-	self.updateSample = function(sample, newSample) {
-		sample.sff(newSample.sff);
-		sample.target(newSample.target);
-		sample.mid(newSample.mid);
-		sample.mid_set(newSample.mid_set);
-		sample.run_id(newSample.run_id);
-	}
+	
 	self.remove = function(sample) {
 		self.ngssmViewModel.ajax(sample.uri(), 'DELETE').done(function() {
 			self.samples.remove(sample);
@@ -76,7 +65,21 @@ function EditSamplesViewModel(ngssmViewModel) {
 	self.mid = ko.observable();
 	self.mid_set = ko.observable();
 	self.run_id = ko.observable();
+
+	self.edit = function(sample, data) {
+		self.ngssmViewModel.ajax(sample.uri(), 'PUT', data).done(function(res) {
+			self.updateSample(sample, res.sample);
+		});
+	}
 	
+	self.updateSample = function(sample, newSample) {
+		sample.sff(newSample.sff);
+		sample.target(newSample.target);
+		sample.mid(newSample.mid);
+		sample.mid_set(newSample.mid_set);
+		sample.run_id(newSample.run_id);
+	}
+
 	self.setSample = function(sample) {
 		self.sample = sample;
 		self.sff(sample.sff());
@@ -85,9 +88,10 @@ function EditSamplesViewModel(ngssmViewModel) {
 		self.mid_set(sample.mid_set());
 		self.run_id(sample.run_id());
 	}
+
 	self.editSample = function() {
 		$('#sampleEditDialog').modal('hide');
-		self.ngssmViewModel.samplesViewModel.edit(self.sample, {
+		self.edit(self.sample, {
 			sff: self.sff(),
 			target: self.target(),
 			mid: self.mid(),
