@@ -47,8 +47,8 @@ function NgssmViewModel() {
 	self.refreshRunsViewModel = function() {
 		self.runsViewModel.ajax(self.runsViewModel.runsURI, 'GET').done(function(tempdata) {
 			self.runsViewModel.runs.removeAll();
-			for (var i = 1; i <= tempdata.runs.length; i++) {
-				self.runsViewModel.ajax(self.runsViewModel.runsURI.concat('/', i), 'GET').done(function(data) {
+			for (var i = 0; i < tempdata.runs.length; i++) {
+				self.runsViewModel.ajax(location.origin.concat(tempdata.runs[i].uri), 'GET').done(function(data) {
 					self.runsViewModel.runs.push({
 						uri: ko.observable(data.run.uri),
 						mid_set: ko.observable(data.run.mid_set),
