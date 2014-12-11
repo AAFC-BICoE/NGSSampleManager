@@ -53,10 +53,9 @@ function RunsViewModel(ngssmViewModel) {
 		});
 	}
 	self.updateRun = function(run, newRun) {
-		var i = self.runs.indexOf(run);
-		self.runs()[i].plate(newRun.plate);
-		self.runs()[i].mid_set(newRun.mid_set);
-		self.runs()[i].type(newRun.type);
+		run.plate(newRun.plate);
+		run.mid_set(newRun.mid_set);
+		run.type(newRun.type);
 	}
 	self.remove = function(run) {
 		self.ajax(run.uri(), 'DELETE').done(function() {
