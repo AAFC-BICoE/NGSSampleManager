@@ -4,33 +4,11 @@ function SamplesViewModel(ngssmViewModel) {
 	self.samplesURI = location.origin.concat("/ngssm/api/v1.0/samples");
 	self.samples = ko.observableArray();
 
-	self.ajax = function(uri, method, data) {
-		var request = {
-			url: uri,
-			type: method,
-			accepts: "application/json",
-			cache: false,
-			dataType: 'json',
-			data: JSON.stringify(data),
-			beforeSend: function (xhr) {
-				xhr.setRequestHeader("Authorization", 
-					"Basic " + btoa(self.ngssmViewModel.loginViewModel.username + ":" + self.ngssmViewModel.loginViewModel.password));
-			},
-			error: function(jqXHR) {
-				console.log("ajax error " + jqXHR.status);
-			}
-		};
-		if (data !== undefined) {
-			request["contentType"] = "application/json";
-		}
-		return $.ajax(request);
-	}
-
 	self.beginSampleAdd = function() {
 		$('#sampleAddDialog').modal('show');
 	}
 	self.add = function(sample) {
-		self.ajax(self.samplesURI, 'POST', sample).done(function(data) {
+		self.ngssmViewModel.ajax(self.samplesURI, 'POST', sample).done(function(data) {
 			self.samples.push({
 				sff: ko.observable(data.sample.sff),
 				target: ko.observable(data.sample.target),
@@ -46,7 +24,7 @@ function SamplesViewModel(ngssmViewModel) {
 		$('#sampleEditDialog').modal('show');
 	}
 	self.edit = function(sample, data) {
-		self.ajax(sample.uri(), 'PUT', data).done(function(res) {
+		self.ngssmViewModel.ajax(sample.uri(), 'PUT', data).done(function(res) {
 			self.updateSample(sample, res.sample);
 		});
 	}
@@ -58,7 +36,7 @@ function SamplesViewModel(ngssmViewModel) {
 		sample.run_id(newSample.run_id);
 	}
 	self.remove = function(sample) {
-		self.ajax(sample.uri(), 'DELETE').done(function() {
+		self.ngssmViewModel.ajax(sample.uri(), 'DELETE').done(function() {
 			self.samples.remove(sample);
 		});
 	}

@@ -45,7 +45,7 @@ function NgssmViewModel() {
 	}
 
 	self.refreshRunsViewModel = function() {
-		self.runsViewModel.ajax(self.runsViewModel.runsURI, 'GET').done(function(data) {
+		self.ajax(self.runsViewModel.runsURI, 'GET').done(function(data) {
 			self.runsViewModel.runs.removeAll();
 			for (var i = 0; i < data.runs.length; i++) {
 				self.runsViewModel.runs.push({
@@ -63,7 +63,7 @@ function NgssmViewModel() {
 	}
 
 	self.refreshSamplesViewModel = function() {
-		self.samplesViewModel.ajax(self.samplesViewModel.samplesURI, 'GET').done(function(data) {
+		self.ajax(self.samplesViewModel.samplesURI, 'GET').done(function(data) {
 			self.samplesViewModel.samples.removeAll();
 			for (var i = 0; i < data.samples.length; i++) {
 				self.samplesViewModel.samples.push({
@@ -80,6 +80,28 @@ function NgssmViewModel() {
 				setTimeout(self.beginLogin, 500);
 			}
 		});
+	}
+
+	self.ajax = function(uri, method, data) {
+		var request = {
+			url: uri,
+			type: method,
+			accepts: "application/json",
+			cache: false,
+			dataType: 'json',
+			data: JSON.stringify(data),
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("Authorization", 
+					"Basic " + btoa(self.loginViewModel.username + ":" + self.loginViewModel.password));
+			},
+			error: function(jqXHR) {
+				console.log("ajax error " + jqXHR.status);
+			}
+		};
+		if (data !== undefined) {
+			request["contentType"] = "application/json";
+		}
+		return $.ajax(request);
 	}
 
 	// TODO refreshing the list is slow; maybe delete only affected entries (or look at performance of filling list)?

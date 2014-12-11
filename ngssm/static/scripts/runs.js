@@ -6,34 +6,11 @@ function RunsViewModel(ngssmViewModel) {
 
 	self.observable = new Observable(self);
 
-	self.ajax = function(uri, method, data) {
-		var request = {
-			url: uri,
-			type: method,
-			accepts: "application/json",
-			cache: false,
-			dataType: 'json',
-			data: JSON.stringify(data),
-			beforeSend: function (xhr) {
-				xhr.setRequestHeader("Authorization", 
-					"Basic " + btoa(self.ngssmViewModel.loginViewModel.username + ":" + self.ngssmViewModel.loginViewModel.password));
-			},
-			error: function(jqXHR) {
-				console.log("ajax error " + jqXHR.status);
-			}
-		};
-		if (data !== undefined) {
-			request["contentType"] = "application/json";
-		}
-		return $.ajax(request);
-	}
-
-
 	self.beginRunAdd = function() {
 		$('#runAddDialog').modal('show');
 	}
 	self.add = function(run) {
-		self.ajax(self.runsURI, 'POST', run).done(function(data) {
+		self.ngssmViewModel.ajax(self.runsURI, 'POST', run).done(function(data) {
 			self.runs.push({
 				mid_set: ko.observable(data.run.mid_set),
 				plate: ko.observable(data.run.plate),
@@ -48,7 +25,7 @@ function RunsViewModel(ngssmViewModel) {
 		$('#runEditDialog').modal('show');
 	}
 	self.edit = function(run, data) {
-		self.ajax(run.uri(), 'PUT', data).done(function(res) {
+		self.ngssmViewModel.ajax(run.uri(), 'PUT', data).done(function(res) {
 			self.updateRun(run, res.run);
 		});
 	}
@@ -58,7 +35,7 @@ function RunsViewModel(ngssmViewModel) {
 		run.type(newRun.type);
 	}
 	self.remove = function(run) {
-		self.ajax(run.uri(), 'DELETE').done(function() {
+		self.ngssmViewModel.ajax(run.uri(), 'DELETE').done(function() {
 			self.runs.remove(run);
 			self.notifyObservers('DELETE');
 		});
