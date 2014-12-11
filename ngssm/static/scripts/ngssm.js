@@ -18,11 +18,11 @@ function NgssmViewModel() {
 
 	self.loginViewModel = new LoginViewModel();
 	self.samplesViewModel = new SamplesViewModel(self);
-	self.addSamplesViewModel = new AddSamplesViewModel(self);
-	self.editSamplesViewModel = new EditSamplesViewModel(self);
+	self.addSamplesViewModel = new AddSamplesViewModel(self.samplesViewModel);
+	self.editSamplesViewModel = new EditSamplesViewModel(self.samplesViewModel);
 	self.runsViewModel = new RunsViewModel(self);
-	self.addRunsViewModel = new AddRunsViewModel(self);
-	self.editRunsViewModel = new EditRunsViewModel(self);
+	self.addRunsViewModel = new AddRunsViewModel(self.runsViewModel);
+	self.editRunsViewModel = new EditRunsViewModel(self.runsViewModel);
 
 	ko.applyBindings(self.loginViewModel, $('#loginDialog')[0]);
 	ko.applyBindings(self.samplesViewModel, $('#sampleContainer')[0]);

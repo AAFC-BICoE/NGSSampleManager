@@ -33,16 +33,16 @@ function RunsViewModel(ngssmViewModel) {
 	}
 }
 
-function AddRunsViewModel(ngssmViewModel) {
+function AddRunsViewModel(runsViewModel) {
 	var self = this;
-	self.ngssmViewModel = ngssmViewModel;
+	self.runsViewModel = runsViewModel;
 	self.plate = ko.observable();
 	self.mid_set = ko.observable();
 	self.type = ko.observable();
 	
 	self.addRun = function() {
 		$('#runAddDialog').modal('hide');
-		self.ngssmViewModel.runsViewModel.add({
+		self.runsViewModel.add({
 			plate: self.plate(),
 			mid_set: self.mid_set(),
 			type: self.type(),
@@ -53,15 +53,15 @@ function AddRunsViewModel(ngssmViewModel) {
 	}
 }
 
-function EditRunsViewModel(ngssmViewModel) {
+function EditRunsViewModel(runsViewModel) {
 	var self = this;
-	self.ngssmViewModel = ngssmViewModel;
+	self.runsViewModel = runsViewModel;
 	self.plate = ko.observable();
 	self.mid_set = ko.observable();
 	self.type = ko.observable();
 
 	self.edit = function(run, data) {
-		self.ngssmViewModel.ajax(run.uri(), 'PUT', data).done(function(res) {
+		self.runsViewModel.ngssmViewModel.ajax(run.uri(), 'PUT', data).done(function(res) {
 			self.updateRun(run, res.run);
 		});
 	}
