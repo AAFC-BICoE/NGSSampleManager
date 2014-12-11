@@ -24,16 +24,7 @@ function RunsViewModel(ngssmViewModel) {
 		self.ngssmViewModel.editRunsViewModel.setRun(run);
 		$('#runEditDialog').modal('show');
 	}
-	self.edit = function(run, data) {
-		self.ngssmViewModel.ajax(run.uri(), 'PUT', data).done(function(res) {
-			self.updateRun(run, res.run);
-		});
-	}
-	self.updateRun = function(run, newRun) {
-		run.plate(newRun.plate);
-		run.mid_set(newRun.mid_set);
-		run.type(newRun.type);
-	}
+	
 	self.remove = function(run) {
 		self.ngssmViewModel.ajax(run.uri(), 'DELETE').done(function() {
 			self.runs.remove(run);
@@ -69,15 +60,28 @@ function EditRunsViewModel(ngssmViewModel) {
 	self.mid_set = ko.observable();
 	self.type = ko.observable();
 
+	self.edit = function(run, data) {
+		self.ngssmViewModel.ajax(run.uri(), 'PUT', data).done(function(res) {
+			self.updateRun(run, res.run);
+		});
+	}
+
+	self.updateRun = function(run, newRun) {
+		run.plate(newRun.plate);
+		run.mid_set(newRun.mid_set);
+		run.type(newRun.type);
+	}
+	
 	self.setRun = function(run) {
 		self.run = run;
 		self.plate(run.plate());
 		self.mid_set(run.mid_set());
 		self.type(run.type());
 	}
+
 	self.editRun = function() {
 		$('#runEditDialog').modal('hide');
-		self.ngssmViewModel.runsViewModel.edit(self.run, {
+		self.edit(self.run, {
 			plate: self.plate(),
 			mid_set: self.mid_set(),
 			type: self.type(),
@@ -87,14 +91,3 @@ function EditRunsViewModel(ngssmViewModel) {
 		self.type("");
 	}
 }
-
-//var samplesViewModel = new SamplesViewModel();
-//var addSamplesViewModel = new AddSamplesViewModel();
-//var editSamplesViewModel = new EditSamplesViewModel();
-
-//var runsViewModel = new RunsViewModel();
-//var addRunsViewModel = new AddRunsViewModel();
-//var editRunsViewModel = new EditRunsViewModel();
-
-//var loginViewModel = new LoginViewModel();
-//window.alert(loginViewModel)
