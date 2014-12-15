@@ -1,7 +1,7 @@
 from ngssm import app, auth, api
 from flask import request, url_for, abort
 from flask.ext.restful import Resource, reqparse, fields, marshal
-
+from math import ceil
 from ngssm.entities.run import Run
 
 run_fields = {
@@ -108,7 +108,60 @@ class RunListAPI(Resource):
 			print "Applying ", len(kwargs), " filters"
 			query = query.filter_by(**kwargs)
 
-		return { 'runs': marshal(query.all(), run_uris), 'run_count': query.count() }
+		return { 'runs': marshal(query.limit(10).all(), run_uris), 'run_count': query.count() }
+
+class PagingAPI(Resource):
+	def __init__(self):
+		self.postreqparse = reqparse.RequestParser()
+		self.postreqparse.add_argument('type', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('mid_set', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('plate', type = str, default = "", location = 'json')
+		self.postreqparse.add_argument('sequencing_notes', type = str, default = "", location = 'json')
+
+		self.reqparse = reqparse.RequestParser()
+		self.reqparse.add_argument('type', type = str, default = "")
+		self.reqparse.add_argument('mid_set', type = str, default = "")
+		self.reqparse.add_argument('plate', type = str, default = "")
+		self.reqparse.add_argument('sequencing_notes', type = str, default = "")
+		super(PagingAPI, self).__init__();
+
+	@auth.login_required
+	def post(self):
+
+		args = self.postreqparse.parse_args();
+
+		run = Run()
+		for k, v in args.iteritems():
+			if v != None:
+				setattr(run,k,v)
+
+		session = app.session_maker()
+		session.add(run)
+		session.commit()
+
+		return { 'run': marshal(run, run_fields) } , 201
+
+	@auth.login_required
+	def get(self, Offset):
+		session = app.session_maker()
+		query = session.query(Run)
+
+		args = self.reqparse.parse_args();
+
+		# build a dictionary and then unpack it into
+		# the filter_by arguments using **
+		kwargs = {}
+		for k, v in args.iteritems():
+			if v != None and len(v) > 0:
+				kwargs[k]=v
+
+		if len(kwargs) > 0:
+			print "Applying ", len(kwargs), " filters"
+			query = query.filter_by(**kwargs)
+		page_count = int(ceil(query.count() / float(10)))
+		return { 'runs': marshal(query.offset(Offset*10-10).limit(10).all(), run_uris), 'run_count': query.count(), 'page_count': page_count, 'current_page': Offset }
 
 api.add_resource(RunListAPI, '/ngssm/api/v1.0/runs', endpoint = 'runs')
 api.add_resource(RunAPI, '/ngssm/api/v1.0/runs/<int:id>', endpoint = 'run')
+#api.add_resource(PagingAPI, '/ngssm/api/v1.0/runs?offset=<int:Offset>&limit=<int:Limit>', endpoint = 'runspage')
+api.add_resource(PagingAPI, '/ngssm/api/v1.0/runs/page/<int:Offset>', endpoint = 'runspage')
