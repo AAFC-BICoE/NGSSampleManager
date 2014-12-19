@@ -31,6 +31,17 @@ function RunsViewModel(ngssmViewModel) {
 			self.notifyObservers('DELETE');
 		});
 	}
+	self.nextPage = function() {
+		self.ngssmViewModel.refreshRunsViewModel(self.ngssmViewModel.nbPerPage, self.ngssmViewModel.currentPage + self.ngssmViewModel.nbPerPage);
+		self.ngssmViewModel.currentPage = self.ngssmViewModel.currentPage + self.ngssmViewModel.nbPerPage;
+	}
+	
+	self.prevPage = function() {
+		if (self.ngssmViewModel.currentPage - self.ngssmViewModel.nbPerPage >= 0) {
+			self.ngssmViewModel.refreshRunsViewModel(self.ngssmViewModel.nbPerPage, self.ngssmViewModel.currentPage - self.ngssmViewModel.nbPerPage);
+			self.ngssmViewModel.currentPage = self.ngssmViewModel.currentPage - self.ngssmViewModel.nbPerPage;
+		}
+	}
 }
 
 function AddRunsViewModel(runsViewModel) {
