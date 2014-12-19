@@ -37,7 +37,7 @@ function SamplesViewModel(ngssmViewModel) {
 	
 	self.prevPage = function() {
 		if (self.ngssmViewModel.currentPage - self.ngssmViewModel.nbPerPage >= 0) {
-			self.ngssmViewModel.refreshRunsViewModel(self.ngssmViewModel.nbPerPage, self.ngssmViewModel.currentPage - self.ngssmViewModel.nbPerPage);
+			self.ngssmViewModel.refreshSamplesViewModel(self.ngssmViewModel.nbPerPage, self.ngssmViewModel.currentPage - self.ngssmViewModel.nbPerPage);
 			self.ngssmViewModel.currentPage = self.ngssmViewModel.currentPage - self.ngssmViewModel.nbPerPage;
 		}
 	}
