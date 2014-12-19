@@ -4,6 +4,9 @@ function NgssmViewModel() {
 	self.folders = ['runs', 'samples']
 	self.chosenFolderId = ko.observable();
 
+	self.currentPage = 0;
+	self.nbPerPage = 10;
+
 	self.goToFolder = function(folder) { 
 		self.chosenFolderId(folder); 
 		$('#runContainer')[0].style.display = 'none';
@@ -13,7 +16,7 @@ function NgssmViewModel() {
 		} else if (folder = "samples") {
 			$('#sampleContainer')[0].style.display = 'block';
 		}
-		self.refreshViewModels();
+		self.refreshViewModels(self.nbPerPage,0);
 	};
 
 	self.loginViewModel = new LoginViewModel();
@@ -34,25 +37,32 @@ function NgssmViewModel() {
 
 	self.loginViewModel.beginLogin();
 
-	self.refreshViewModels = function() {
+	self.refreshViewModels = function(limit, offset) {
 		if (self.chosenFolderId() == "samples") {
 			self.refreshSamplesViewModel();
 		} else if (self.chosenFolderId() == "runs") {
-			self.refreshRunsViewModel();
+			self.refreshRunsViewModel(limit, offset);
 		} else {
 			alert ("Failed to refresh unsupported view model: " + self.chosenFolderId());
 		}
 	}
 
-	self.refreshRunsViewModel = function() {
-		self.ajax(self.runsViewModel.runsURI, 'GET').done(function(data) {
+	self.refreshRunsViewModel = function(limit, offset) {
+		self.ajax(self.runsViewModel.runsURI.concat('?limit=', limit, '&offset=', offset), 'GET').done(function(tempdata) {
 			self.runsViewModel.runs.removeAll();
-			for (var i = 0; i < data.runs.length; i++) {
-				self.runsViewModel.runs.push({
-					uri: ko.observable(data.runs[i].uri),
-					mid_set: ko.observable(data.runs[i].mid_set),
-					plate: ko.observable(data.runs[i].plate),
-					type: ko.observable(data.runs[i].type),
+
+			for (var i = 0; i < tempdata.runs.length; i++) {
+				self.ajax(location.origin.concat(tempdata.runs[i].uri), 'GET').done(function(data) {
+					self.runsViewModel.runs.push({
+						uri: ko.observable(data.run.uri),
+						mid_set: ko.observable(data.run.mid_set),
+						plate: ko.observable(data.run.plate),
+						type: ko.observable(data.run.type),
+					});
+				}).fail(function(jqXHR) {
+					if(jqXHR.status = 403) {
+						setTimeout(self.beginLogin, 500);
+					}
 				});
 			}
 		}).fail(function(jqXHR) {
@@ -103,6 +113,8 @@ function NgssmViewModel() {
 		}
 		return $.ajax(request);
 	}
+
+	
 
 	// TODO refreshing the list is slow; maybe delete only affected entries (or look at performance of filling list)?
 	self.loginViewModel.registerObserver(new Observer(self.refreshViewModels));

@@ -112,6 +112,8 @@
 <!-- End Sample Markup; Use Components after knockout 3.2 is released. -->
 
 <!-- Start Run Markup; Use Components after knockout 3.2 is released. -->
+
+
 	<div id="runContainer" class="container">
 		<table id="runTable" class="table table-striped">
 			<tr>
@@ -142,6 +144,8 @@
 			<!-- /ko -->
 		</table>
 		<button data-bind="click: beginRunAdd" class="btn">Add Run</button>
+		<button data-bind="click: prevPage" class="btn">Previous Page</button>
+		<button data-bind="click: nextPage" class="btn">Next Page</button>
 	</div>
 	<div id="runAddDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addRunDialogLabel" aria-hidden="true">
 		<div class="modal-header">
@@ -207,6 +211,8 @@
 			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
 		</div>
 	</div>
+
+
 <!-- End Run Markup; Use Components after knockout 3.2 is released. -->
 
 	<div id="loginDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="loginDialogLabel" aria-hidden="true">
