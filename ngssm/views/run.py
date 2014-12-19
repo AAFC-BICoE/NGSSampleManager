@@ -1,13 +1,17 @@
 from ngssm import app, auth, api
 from flask import request, url_for, abort
 from flask.ext.restful import Resource, reqparse, fields, marshal
-
+from math import ceil
 from ngssm.entities.run import Run
 
 run_fields = {
 		'type': fields.String,
 		'mid_set': fields.String,
 		'plate': fields.String,
+		'uri': fields.Url('run')
+}
+
+run_uris = {
 		'uri': fields.Url('run')
 }
 
@@ -68,6 +72,10 @@ class RunListAPI(Resource):
 		self.reqparse.add_argument('mid_set', type = str, default = "")
 		self.reqparse.add_argument('plate', type = str, default = "")
 		self.reqparse.add_argument('sequencing_notes', type = str, default = "")
+
+		self.reqparse.add_argument('offset', type = int, default = 0)
+		self.reqparse.add_argument('limit', type = int, default = 10)
+
 		super(RunListAPI, self).__init__();
 
 	@auth.login_required
@@ -96,15 +104,18 @@ class RunListAPI(Resource):
 		# build a dictionary and then unpack it into
 		# the filter_by arguments using **
 		kwargs = {}
+		limit = args.get('limit')
+		offset = args.get('offset')
 		for k, v in args.iteritems():
-			if v != None and len(v) > 0:
+			if v != None and type(v) is str and len(v) > 0:
 				kwargs[k]=v
 
 		if len(kwargs) > 0:
 			print "Applying ", len(kwargs), " filters"
 			query = query.filter_by(**kwargs)
 
-		return { 'runs': marshal(query.all(), run_fields), 'run_count': query.count() }
+		return { 'runs': marshal(query.limit(limit).offset(offset).all(), run_uris), 'run_count': query.count(), 'next_page': '/ngssm/api/v1.0/runs?limit=' + str(limit) + '&offset=' + str(offset + limit) }
+
 
 api.add_resource(RunListAPI, '/ngssm/api/v1.0/runs', endpoint = 'runs')
 api.add_resource(RunAPI, '/ngssm/api/v1.0/runs/<int:id>', endpoint = 'run')
