@@ -39,7 +39,7 @@ function NgssmViewModel() {
 
 	self.refreshViewModels = function(limit, offset) {
 		if (self.chosenFolderId() == "samples") {
-			self.refreshSamplesViewModel();
+			self.refreshSamplesViewModel(limit, offset);
 		} else if (self.chosenFolderId() == "runs") {
 			self.refreshRunsViewModel(limit, offset);
 		} else {
@@ -72,17 +72,24 @@ function NgssmViewModel() {
 		});
 	}
 
-	self.refreshSamplesViewModel = function() {
-		self.ajax(self.samplesViewModel.samplesURI, 'GET').done(function(data) {
+	self.refreshSamplesViewModel = function(limit, offset) {
+		self.ajax(self.samplesViewModel.samplesURI.concat('?limit=', limit, '&offset=', offset), 'GET').done(function(tempdata) {
 			self.samplesViewModel.samples.removeAll();
-			for (var i = 0; i < data.samples.length; i++) {
-				self.samplesViewModel.samples.push({
-					uri: ko.observable(data.samples[i].uri),
-					sff: ko.observable(data.samples[i].sff),
-					target: ko.observable(data.samples[i].target),
-					mid: ko.observable(data.samples[i].mid),
-					mid_set: ko.observable(data.samples[i].mid_set),
-					run_id: ko.observable(data.samples[i].run_id),
+
+			for (var i = 0; i < tempdata.samples.length; i++) {
+				self.ajax(location.origin.concat(tempdata.samples[i].uri), 'GET').done(function(data) {
+					self.samplesViewModel.samples.push({
+						uri: ko.observable(data.sample.uri),
+						sff: ko.observable(data.sample.sff),
+						target: ko.observable(data.sample.target),
+						mid: ko.observable(data.sample.mid),
+						mid_set: ko.observable(data.sample.mid_set),
+						run_id: ko.observable(data.sample.run_id),
+					});
+				}).fail(function(jqXHR) {
+					if(jqXHR.status = 403) {
+						setTimeout(self.beginLogin, 500);
+					}
 				});
 			}
 		}).fail(function(jqXHR) {
@@ -91,6 +98,7 @@ function NgssmViewModel() {
 			}
 		});
 	}
+
 
 	self.ajax = function(uri, method, data) {
 		var request = {
