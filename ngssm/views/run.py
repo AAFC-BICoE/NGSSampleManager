@@ -105,9 +105,7 @@ class RunListAPI(Resource):
 		# the filter_by arguments using **
 		kwargs = {}
 		limit = args.get('limit')
-		print limit
 		offset = args.get('offset')
-		print offset
 		for k, v in args.iteritems():
 			if v != None and type(v) is str and len(v) > 0:
 				kwargs[k]=v
