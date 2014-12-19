@@ -16,6 +16,10 @@ sample_fields = {
 		'uri': fields.Url('sample')
 }
 
+sample_uris = {
+		'uri': fields.Url('sample')
+}
+
 class SampleAPI(Resource):
 	def __init__(self):
 		self.reqparse = reqparse.RequestParser()
@@ -87,6 +91,10 @@ class SampleListAPI(Resource):
 		self.reqparse.add_argument('sample', type = str, default = "")
 		self.reqparse.add_argument('primer_forward', type = str, default = "")
 		self.reqparse.add_argument('primer_reverse', type = str, default = "")
+
+		self.reqparse.add_argument('offset', type = int, default = 0)
+		self.reqparse.add_argument('limit', type = int, default = 10)
+
 		super(SampleListAPI, self).__init__();
 
 	@auth.login_required
@@ -118,15 +126,18 @@ class SampleListAPI(Resource):
 		# build a dictionary and then unpack it into
 		# the filter_by arguments using **
 		kwargs = {}
+		limit = args.get('limit')
+		offset = args.get('offset')
+
 		for k, v in args.iteritems():
-			if v != None and ((type(v) == str and len(v) > 0) or (type(v) == int and v > 0)):
+			if v != None and k!= 'limit' and k!= 'offset' and ((type(v) == str and len(v) > 0) or (type(v) == int and v > 0)):
 					kwargs[k]=v
 
 		if len(kwargs) > 0:
 			print "Applying ", len(kwargs), " filters"
 			query = query.filter_by(**kwargs)
 
-		return { 'samples': marshal(query.all(), sample_fields), 'sample_count': query.count() }
+		return { 'samples': marshal(query.limit(limit).offset(offset).all(), sample_uris), 'sample_count': query.count(), 'next_page': '/ngssm/api/v1.0/samples?limit=' + str(limit) + '&offset=' + str(offset + limit) }
 
 api.add_resource(SampleListAPI, '/ngssm/api/v1.0/samples', endpoint = 'samples')
 api.add_resource(SampleAPI, '/ngssm/api/v1.0/samples/<int:id>', endpoint = 'sample')

@@ -4,6 +4,9 @@ function NgssmViewModel() {
 	self.folders = ['runs', 'samples']
 	self.chosenFolderId = ko.observable();
 
+	self.currentPage = 0;
+	self.nbPerPage = 10;
+
 	self.goToFolder = function(folder) { 
 		self.chosenFolderId(folder); 
 		$('#runContainer')[0].style.display = 'none';
@@ -13,16 +16,16 @@ function NgssmViewModel() {
 		} else if (folder = "samples") {
 			$('#sampleContainer')[0].style.display = 'block';
 		}
-		self.refreshViewModels();
+		self.refreshViewModels(self.nbPerPage,0);
 	};
 
 	self.loginViewModel = new LoginViewModel();
-	self.samplesViewModel = new SamplesViewModel(self.loginViewModel);
-	self.addSamplesViewModel = new AddSamplesViewModel(self.loginViewModel);
-	self.editSamplesViewModel = new EditSamplesViewModel(self.loginViewModel);
-	self.runsViewModel = new RunsViewModel(self.loginViewModel);
-	self.addRunsViewModel = new AddRunsViewModel(self.loginViewModel);
-	self.editRunsViewModel = new EditRunsViewModel(self.loginViewModel);
+	self.samplesViewModel = new SamplesViewModel(self);
+	self.addSamplesViewModel = new AddSamplesViewModel(self.samplesViewModel);
+	self.editSamplesViewModel = new EditSamplesViewModel(self.samplesViewModel);
+	self.runsViewModel = new RunsViewModel(self);
+	self.addRunsViewModel = new AddRunsViewModel(self.runsViewModel);
+	self.editRunsViewModel = new EditRunsViewModel(self.runsViewModel);
 
 	ko.applyBindings(self.loginViewModel, $('#loginDialog')[0]);
 	ko.applyBindings(self.samplesViewModel, $('#sampleContainer')[0]);
@@ -34,25 +37,32 @@ function NgssmViewModel() {
 
 	self.loginViewModel.beginLogin();
 
-	self.refreshViewModels = function() {
+	self.refreshViewModels = function(limit, offset) {
 		if (self.chosenFolderId() == "samples") {
-			self.refreshSamplesViewModel();
+			self.refreshSamplesViewModel(limit, offset);
 		} else if (self.chosenFolderId() == "runs") {
-			self.refreshRunsViewModel();
+			self.refreshRunsViewModel(limit, offset);
 		} else {
 			alert ("Failed to refresh unsupported view model: " + self.chosenFolderId());
 		}
 	}
 
-	self.refreshRunsViewModel = function() {
-		self.runsViewModel.ajax(self.runsViewModel.runsURI, 'GET').done(function(data) {
+	self.refreshRunsViewModel = function(limit, offset) {
+		self.ajax(self.runsViewModel.runsURI.concat('?limit=', limit, '&offset=', offset), 'GET').done(function(tempdata) {
 			self.runsViewModel.runs.removeAll();
-			for (var i = 0; i < data.runs.length; i++) {
-				self.runsViewModel.runs.push({
-					uri: ko.observable(data.runs[i].uri),
-					mid_set: ko.observable(data.runs[i].mid_set),
-					plate: ko.observable(data.runs[i].plate),
-					type: ko.observable(data.runs[i].type),
+
+			for (var i = 0; i < tempdata.runs.length; i++) {
+				self.ajax(location.origin.concat(tempdata.runs[i].uri), 'GET').done(function(data) {
+					self.runsViewModel.runs.push({
+						uri: ko.observable(data.run.uri),
+						mid_set: ko.observable(data.run.mid_set),
+						plate: ko.observable(data.run.plate),
+						type: ko.observable(data.run.type),
+					});
+				}).fail(function(jqXHR) {
+					if(jqXHR.status = 403) {
+						setTimeout(self.beginLogin, 500);
+					}
 				});
 			}
 		}).fail(function(jqXHR) {
@@ -62,17 +72,24 @@ function NgssmViewModel() {
 		});
 	}
 
-	self.refreshSamplesViewModel = function() {
-		self.samplesViewModel.ajax(self.samplesViewModel.samplesURI, 'GET').done(function(data) {
+	self.refreshSamplesViewModel = function(limit, offset) {
+		self.ajax(self.samplesViewModel.samplesURI.concat('?limit=', limit, '&offset=', offset), 'GET').done(function(tempdata) {
 			self.samplesViewModel.samples.removeAll();
-			for (var i = 0; i < data.samples.length; i++) {
-				self.samplesViewModel.samples.push({
-					uri: ko.observable(data.samples[i].uri),
-					sff: ko.observable(data.samples[i].sff),
-					target: ko.observable(data.samples[i].target),
-					mid: ko.observable(data.samples[i].mid),
-					mid_set: ko.observable(data.samples[i].mid_set),
-					run_id: ko.observable(data.samples[i].run_id),
+
+			for (var i = 0; i < tempdata.samples.length; i++) {
+				self.ajax(location.origin.concat(tempdata.samples[i].uri), 'GET').done(function(data) {
+					self.samplesViewModel.samples.push({
+						uri: ko.observable(data.sample.uri),
+						sff: ko.observable(data.sample.sff),
+						target: ko.observable(data.sample.target),
+						mid: ko.observable(data.sample.mid),
+						mid_set: ko.observable(data.sample.mid_set),
+						run_id: ko.observable(data.sample.run_id),
+					});
+				}).fail(function(jqXHR) {
+					if(jqXHR.status = 403) {
+						setTimeout(self.beginLogin, 500);
+					}
 				});
 			}
 		}).fail(function(jqXHR) {
@@ -81,6 +98,31 @@ function NgssmViewModel() {
 			}
 		});
 	}
+
+
+	self.ajax = function(uri, method, data) {
+		var request = {
+			url: uri,
+			type: method,
+			accepts: "application/json",
+			cache: false,
+			dataType: 'json',
+			data: JSON.stringify(data),
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("Authorization", 
+					"Basic " + btoa(self.loginViewModel.username + ":" + self.loginViewModel.password));
+			},
+			error: function(jqXHR) {
+				console.log("ajax error " + jqXHR.status);
+			}
+		};
+		if (data !== undefined) {
+			request["contentType"] = "application/json";
+		}
+		return $.ajax(request);
+	}
+
+	
 
 	// TODO refreshing the list is slow; maybe delete only affected entries (or look at performance of filling list)?
 	self.loginViewModel.registerObserver(new Observer(self.refreshViewModels));
