@@ -6,19 +6,25 @@
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
 <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
 </head>
 <body>
-	<div class="navbar">
+	<div id="navbar" class="navbar">
 		<div class="navbar-inner">
 			<a class="brand" href="#">Metagenomics Sample Client Demo</a>
+			<ul class="nav" data-bind="foreach: folders">
+			    <li data-bind = "css: $data == $parent.chosenFolderId() ? 'active' : 'inactive'">
+               			<a data-bind = "click: $parent.goToFolder, text: $data"></a></li>
+			</ul>
 		</div>
 	</div>
-	<div id="main" class="container">
+
+<!-- Start Sample Markup; Use Components after knockout 3.2 is released. -->
+	<div id="sampleContainer" class="container">
 		<table id="sampleTable" class="table table-striped">
 			<tr>
-				<td><b>Plate</b></td>
+				<td><b>Run</b></td>
 				<td><b>SFF</b></td>
 				<td><b>MID</b></td>
 				<td><b>Target</b></td>
@@ -28,7 +34,7 @@
 			<!-- ko foreach: samples -->
 			<tr>
 				<td>
-						<p><b data-bind="text: plate"></b></p>
+						<p><b data-bind="text: run_id"></b></p>
 				</td>
 				<td>
 						<p><b data-bind="text: sff"></b></p>
@@ -40,29 +46,30 @@
 						<p><b data-bind="text: target"></b></p>
 				</td>
 				<td>
-						<p><b data-bind="text: mid_set"></b></p>
 						<p><b data-bind="text: uri"></b></p>
 				</td>
 				<td>
-					<button data-bind="click: $parent.beginEdit" class="btn">Edit</button>
+					<button data-bind="click: $parent.beginSampleEdit" class="btn">Edit</button>
 					<button data-bind="click: $parent.remove" class="btn">Delete</button>
 				</td>
 			</tr>
 			<!-- /ko -->
 		</table>
-		<button data-bind="click: beginAdd" class="btn">Add Sample</button>
+		<button data-bind="click: beginSampleAdd" class="btn">Add Sample</button>
+		<button data-bind="click: prevPage" class="btn">Previous Page</button>
+		<button data-bind="click: nextPage" class="btn">Next Page</button>
 	</div>
-	<div id="add" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+	<div id="sampleAddDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addSampleDialogLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h3 id="addDialogLabel">Add Sample</h3>
+			<h3 id="addSampleDialogLabel">Add Sample</h3>
 		</div>
 		<div class="modal-body">
 			<form class="form-horizontal">
 				<div class="control-group">
-					<label class="control-label" for="inputTask">Plate</label>
+					<label class="control-label" for="inputTask">Run ID</label>
 					<div class="controls">
-						<input data-bind="value: plate" type="text" id="inputPlate" placeholder="Plate" style="width: 150px;">
+						<input data-bind="value: run_id" type="int" id="inputRun" placeholder="Run ID" style="width: 150px;">
 					</div>
 				</div>
 				<div class="control-group">
@@ -78,7 +85,7 @@
 			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
 		</div>
 	</div>
-	<div id="edit" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="editDialogLabel" aria-hidden="true">
+	<div id="sampleEditDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="editDialogLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 			<h3 id="editDialogLabel">Edit Sample</h3>
@@ -86,9 +93,9 @@
 		<div class="modal-body">
 			<form class="form-horizontal">
 				<div class="control-group">
-					<label class="control-label" for="inputPlate">Plate</label>
+					<label class="control-label" for="inputRun">Run</label>
 					<div class="controls">
-						<input data-bind="value: plate" type="text" id="inputPlate" placeholder="Plate" style="width: 150px;">
+						<input data-bind="value: run_id" type="int" id="inputRun" placeholder="Run" style="width: 150px;">
 					</div>
 				</div>
 				<div class="control-group">
@@ -104,7 +111,113 @@
 			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
 		</div>
 	</div>
-	<div id="login" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="loginDialogLabel" aria-hidden="true">
+<!-- End Sample Markup; Use Components after knockout 3.2 is released. -->
+
+<!-- Start Run Markup; Use Components after knockout 3.2 is released. -->
+
+
+	<div id="runContainer" class="container">
+		<table id="runTable" class="table table-striped">
+			<tr>
+				<td><b>Mid Set</b></td>
+				<td><b>Plate</b></td>
+				<td><b>Type</b></td>
+				<td><b>Details</b></td>
+			</tr>
+			<!-- ko foreach: runs -->
+			<tr>
+				<td>
+						<p><b data-bind="text: mid_set"></b></p>
+				</td>
+				<td>
+						<p><b data-bind="text: plate"></b></p>
+				</td>
+				<td>
+						<p><b data-bind="text: type"></b></p>
+				</td>
+				<td>
+						<p><b data-bind="text: uri"></b></p>
+				</td>
+				<td>
+					<button data-bind="click: $parent.beginRunEdit" class="btn">Edit</button>
+					<button data-bind="click: $parent.remove" class="btn">Delete</button>
+				</td>
+			</tr>
+			<!-- /ko -->
+		</table>
+		<button data-bind="click: beginRunAdd" class="btn">Add Run</button>
+		<button data-bind="click: prevPage" class="btn">Previous Page</button>
+		<button data-bind="click: nextPage" class="btn">Next Page</button>
+	</div>
+	<div id="runAddDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addRunDialogLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="addRunDialogLabel">Add Run</h3>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">Plate</label>
+					<div class="controls">
+						<input data-bind="value: plate" type="text" id="inputPlate" placeholder="Plate Name" style="width: 300px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">MidSet</label>
+					<div class="controls">
+						<input data-bind="value: mid_set" type="text" id="inputMidSet" placeholder="MidSet Label" style="width: 300px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">Type</label>
+					<div class="controls">
+						<input data-bind="value: type" type="text" id="inputType" placeholder="Type Name" style="width: 300px;">
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button data-bind="click: addRun" class="btn btn-primary">Add Run</button>
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		</div>
+	</div>
+	<div id="runEditDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="editDialogLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="editDialogLabel">Edit Run</h3>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">Plate</label>
+					<div class="controls">
+						<input data-bind="value: plate" type="text" id="inputPlate" placeholder="Plate Name" style="width: 300px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">MidSet</label>
+					<div class="controls">
+						<input data-bind="value: mid_set" type="text" id="inputMidSet" placeholder="MidSet Label" style="width: 300px;">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputDescription">Type</label>
+					<div class="controls">
+						<input data-bind="value: type" type="text" id="inputType" placeholder="Type Name" style="width: 300px;">
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button data-bind="click: editRun" class="btn btn-primary">Edit Run</button>
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		</div>
+	</div>
+
+
+<!-- End Run Markup; Use Components after knockout 3.2 is released. -->
+
+	<div id="loginDialog" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="loginDialogLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 			<h3 id="loginDialogLabel">Login</h3>
@@ -131,207 +244,16 @@
 	</div>
 
 
-	<script type="text/javascript">
-		function getCookie(cname)
-		{
-			var name = cname + "=";
-			var ca = document.cookie.split(';');
-			for(var i=0; i<ca.length; i++) 
-			{
-				var c = ca[i].trim();
-				if (c.indexOf(name)==0) return c.substring(name.length,c.length);
-			}
-			return "";
-		}
-		function SamplesViewModel() {
-			var self = this;
-			self.samplesURI = location.origin.concat("/ngssm/api/v1.0/samples");
-			self.username = "";
-			self.password = "";
-			self.samples = ko.observableArray();
+	<script type="text/javascript" src="scripts/ngssm.js"></script>
+	<script type="text/javascript" src="scripts/login.js"></script>
+	<script type="text/javascript" src="scripts/samples.js"></script>
+	<script type="text/javascript" src="scripts/runs.js"></script>
+	<script type="text/javascript" src="scripts/observable.js"></script>
 
-			self.ajax = function(uri, method, data) {
-				var request = {
-					url: uri,
-					type: method,
-					accepts: "application/json",
-					cache: false,
-					dataType: 'json',
-					data: JSON.stringify(data),
-					beforeSend: function (xhr) {
-						xhr.setRequestHeader("Authorization", 
-							"Basic " + btoa(self.username + ":" + self.password));
-					},
-					error: function(jqXHR) {
-						console.log("ajax error " + jqXHR.status);
-					}
-				};
-				if (data !== undefined) {
-					request["contentType"] = "application/json";
-				}
-				return $.ajax(request);
-			}
-
-			self.beginAdd = function() {
-				$('#add').modal('show');
-			}
-			self.add = function(sample) {
-				self.ajax(self.samplesURI, 'POST', sample).done(function(data) {
-					self.samples.push({
-						sff: ko.observable(data.sample.sff),
-						target: ko.observable(data.sample.target),
-						mid: ko.observable(data.sample.mid),
-						mid_set: ko.observable(data.sample.mid_set),
-						plate: ko.observable(data.sample.plate),
-						uri: ko.observable(data.sample.uri),
-					});
-				});
-			}
-			
-			self.beginEdit = function(sample) {
-				editSamplesViewModel.setSample(sample);
-				$('#edit').modal('show');
-			}
-			self.edit = function(sample, data) {
-				self.ajax(sample.uri(), 'PUT', data).done(function(res) {
-					self.updateSample(sample, res.sample);
-				});
-			}
-			self.updateSample = function(sample, newSample) {
-				var i = self.samples.indexOf(sample);
-				self.samples()[i].sff(newSample.sff);
-				self.samples()[i].target(newSample.target);
-				self.samples()[i].mid(newSample.mid);
-				self.samples()[i].mid_set(newSample.mid_set);
-				self.samples()[i].plate(newSample.plate);
-			}
-
-			self.remove = function(sample) {
-				self.ajax(sample.uri(), 'DELETE').done(function() {
-					self.samples.remove(sample);
-				});
-			}
-			
-			self.beginLogin = function() {
-				username = getCookie("username");
-				password = getCookie("password");
-				if (username.length > 0 || password.length > 0) 
-				{
-					self.login(username, password);
-				} 
-				else 
-				{
-					$('#login').modal('show');
-				}
-			}
-			self.login = function(username, password) {
-
-				self.username = username;
-				self.password = password;
-
-				document.cookie = "username= " + username + ";";
-				document.cookie = "password= " + password + ";";
-
-				self.ajax(self.samplesURI, 'GET').done(function(data) {
-					for (var i = 0; i < data.samples.length; i++) {
-						self.samples.push({
-							uri: ko.observable(data.samples[i].uri),
-							sff: ko.observable(data.samples[i].sff),
-							target: ko.observable(data.samples[i].target),
-							mid: ko.observable(data.samples[i].mid),
-							mid_set: ko.observable(data.samples[i].mid_set),
-							plate: ko.observable(data.samples[i].plate),
-						});
-					}
-				}).fail(function(jqXHR) {
-					if(jqXHR.status = 403) {
-						setTimeout(self.beginLogin, 500);
-					}
-				});
-			}
-
-			self.beginLogin();
-		}
-
-		function AddSamplesViewModel() {
-			var self = this;
-			self.sff = ko.observable();
-			self.target = ko.observable();
-			self.mid = ko.observable();
-			self.mid_set = ko.observable();
-			self.plate = ko.observable();
-			
-			self.addSample = function() {
-				$('#add').modal('hide');
-				samplesViewModel.add({
-					sff: self.sff(),
-					target: self.target(),
-					mid: self.mid(),
-					mid_set: self.mid_set(),
-					plate: self.plate(),
-				});
-				self.sff("");
-				self.target("");
-				self.mid("");
-				self.mid_set("");
-				self.plate("");
-			}
-		}
-
-		function EditSamplesViewModel() {
-			var self = this;
-			self.sff = ko.observable();
-			self.target = ko.observable();
-			self.mid = ko.observable();
-			self.mid_set = ko.observable();
-			self.plate = ko.observable();
-			
-			self.setSample = function(sample) {
-				self.sample = sample;
-				self.sff(sample.sff());
-				self.target(sample.target());
-				self.mid(sample.mid());
-				self.mid_set(sample.mid_set());
-				self.plate(sample.plate());
-			}
-			self.editSample = function() {
-				$('#edit').modal('hide');
-				samplesViewModel.edit(self.sample, {
-					sff: self.sff(),
-					target: self.target(),
-					mid: self.mid(),
-					mid_set: self.mid_set(),
-					plate: self.plate(),
-				});
-				self.sff("");
-				self.target("");
-				self.mid("");
-				self.mid_set("");
-				self.plate("");
-			}
-		}
-
-		function LoginViewModel() {
-			var self = this;
-			self.username = ko.observable();
-			self.password = ko.observable();
-			
-			self.login = function() {
-				$('#login').modal('hide');
-				samplesViewModel.login(self.username(),self.password());
-			}
-		}
-
-		var samplesViewModel = new SamplesViewModel();
-		var addSamplesViewModel = new AddSamplesViewModel();
-		var editSamplesViewModel = new EditSamplesViewModel();
-		var loginViewModel = new LoginViewModel();
-
-		ko.applyBindings(samplesViewModel, $('#main')[0]);
-		ko.applyBindings(addSamplesViewModel, $('#add')[0]);
-		ko.applyBindings(editSamplesViewModel, $('#edit')[0]);
-		ko.applyBindings(loginViewModel, $('#login')[0]);
+	<script>
+		ko.applyBindings(new NgssmViewModel(), $('#navbar')[0]);
 	</script>
+
 	<script>
 		$(document).ready(function(){
 			$(function(){

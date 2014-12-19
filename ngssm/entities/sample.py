@@ -1,15 +1,16 @@
 from base import Base
-from sqlalchemy import Column, Integer, String, Boolean
+from run import Run
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
+from sqlalchemy.orm import relationship
 
 class Sample(Base):
-	__tablename__ = 'samples'
+	__tablename__ = 'sample'
 	id = Column(Integer, primary_key=True)
+	run_id = Column(Integer, ForeignKey('run.id'), nullable=False)
 	shipped = Column(String)
 	received = Column(String)
 	project = Column(String)
 	sff = Column(String)
-	mid_set = Column(String)
-	plate = Column(String)
 	mid = Column(String)
 	sample = Column(String)
 	collector = Column(String)
@@ -37,17 +38,10 @@ class Sample(Base):
 	annealing = Column(String)
 	dna_ug = Column(String)
 	notes = Column(String)
-	sequencing_notes = Column(String)
 	tm_c_max = Column(String)
 	tm_c_min = Column(String)
 	tm_c_avg = Column(String)
-	
-	def as_dict(self):
-		return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-	def __iter__(self):
-		values = vars(self)
-		for attr in self.__mapper__.columns.keys():
-		    if attr in values:
-			yield attr, values[attr]
+	def __repr__(self):
+		return '<Sample: %r>' % (self.sample)
 
