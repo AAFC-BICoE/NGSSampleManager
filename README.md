@@ -1,7 +1,7 @@
 ## Synopsis
 
 This project is an experiment in the use of flask to provide a RESTful API for
-querying and managing a database of NGS runs and assocaited sample metadata.
+querying and managing a database of NGS runs and associated sample metadata.
 
 ## Code Example
 TODO
